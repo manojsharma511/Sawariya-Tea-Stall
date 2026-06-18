@@ -1,0 +1,58 @@
+[
+  {
+    "src": "/images/masala-chai.jpg",
+    "alt": "Masala Chai",
+    "caption": "Our Signature Masala Chai",
+    "captionHi": "हमारी मसाला चाय",
+    "category": "tea"
+  },
+  {
+    "src": "/images/kulhad-tea.jpg",
+    "alt": "Kulhad Chai",
+    "caption": "Traditional Kulhad Chai",
+    "captionHi": "कुल्हड़ चाय",
+    "category": "tea"
+  },
+  {
+    "src": "/images/special-tea.jpg",
+    "alt": "Special Kesar Tea",
+    "caption": "Special Kesar Tea",
+    "captionHi": "स्पेशल केसर चाय",
+    "category": "tea"
+  },
+  {
+    "src": "/images/snacks.jpg",
+    "alt": "Tea Time Snacks",
+    "caption": "Delicious Snacks",
+    "captionHi": "स्वादिष्ट नाश्ता",
+    "category": "snacks"
+  },
+  {
+    "src": "/images/about-bg.jpg",
+    "alt": "Our Tea Stall",
+    "caption": "Our Cozy Stall",
+    "captionHi": "हमारी दुकान",
+    "category": "shop"
+  },
+  {
+    "src": "/images/elaichi-tea.jpg",
+    "alt": "Elaichi Tea",
+    "caption": "Elaichi Special",
+    "captionHi": "इलायची स्पेशल",
+    "category": "tea"
+  },
+  {
+    "src": "/images/hero-bg.jpg",
+    "alt": "Tea Making",
+    "caption": "Fresh Brewing",
+    "captionHi": "ताज़ी चाय",
+    "category": "shop"
+  },
+  {
+    "src": "/images/khatu-shyam.jpg",
+    "alt": "Khatu Shyam Temple",
+    "caption": "Khatu Shyam Ji Temple",
+    "captionHi": "खाटू श्याम जी मंदिर",
+    "category": "customer"
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "shopName": "Sawariya Tea Stall",
+  "shopNameHi": "साँवरिया टी स्टॉल",
+  "ownerName": "Mukesh Sharma",
+  "ownerNameHi": "मुकेश शर्मा",
+  "phone": "7340030949",
+  "whatsapp": "917340030949",
+  "email": "mukeshsharma.khatu@gmail.com",
+  "address": "Near Toran Gate, Khatu Shyam Ji, Rajasthan, India",
+  "addressHi": "तोरण गेट के पास, खाटू श्याम जी, सीकर, राजस्थान",
+  "city": "Khatu Shyam Ji",
+  "district": "Sikar",
+  "state": "Rajasthan",
+  "pinCode": "332602",
+  "workingHours": {
+    "daily": "6:00 AM - 10:00 PM",
+    "dailyHi": "सुबह 6 बजे से रात 10 बजे तक",
+    "festivals": "Extended Hours",
+    "festivalsHi": "त्योहारों के दिनों में अतिरिक्त समय तक खुली",
+    "ekadashi": "Open Early",
+    "ekadashiHi": "श्याम एकादशी पर जल्दी खुलती है"
+  },
+  "blessing": "🙏 श्री खाटू श्याम जी की जय 🙏"
+}

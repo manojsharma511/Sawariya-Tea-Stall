@@ -1,0 +1,35 @@
+[
+  {
+    "id": "daily-1",
+    "type": "daily",
+    "title": "Chai & Samosa Combo",
+    "titleHi": "चाय और समोसा कॉम्बो",
+    "description": "Get 1 Masala Chai + 1 Crispy Samosa for just ₹25 instead of ₹30. Perfect breakfast or evening snack!",
+    "descriptionHi": "1 मसाला चाय + 1 गरमा-गरम समोसा मात्र ₹25 में (₹30 की जगह)। सुबह और शाम के नाश्ते के लिए बेहतरीन!",
+    "discount": "Save ₹5",
+    "validity": "Available Daily (6:00 AM - 10:00 PM)",
+    "badge": "Daily Best Seller"
+  },
+  {
+    "id": "fest-1",
+    "type": "festival",
+    "title": "Khatu Mela Special Offer",
+    "titleHi": "खाटू मेला स्पेशल ऑफर",
+    "description": "Celebrate the holy Shyam Baba Mela with us. Get free assorted biscuits or rusks with every order of Kesar Tea!",
+    "descriptionHi": "बाबा श्याम के मेले के पावन अवसर पर, प्रत्येक केसर चाय के साथ बिस्कुट या रस्क बिल्कुल मुफ्त!",
+    "discount": "Free Side Biscuits",
+    "validity": "Valid during Shyam Mela & Festivals",
+    "badge": "Festival Special"
+  },
+  {
+    "id": "season-1",
+    "type": "seasonal",
+    "title": "Monsoon & Winter Group Pack",
+    "titleHi": "मानसून और सर्दी ग्रुप पैक",
+    "description": "Traveling with a group of devotees? Buy 4 Kulhad Chais, get the 5th Kulhad Chai absolutely free!",
+    "descriptionHi": "भक्तों के समूह के साथ यात्रा कर रहे हैं? 4 कुल्हड़ चाय खरीदें, 5वीं कुल्हड़ चाय बिल्कुल मुफ्त पाएं!",
+    "discount": "Buy 4 Get 1 Free",
+    "validity": "Valid on rainy days and winter season",
+    "badge": "Group Special"
+  }
+]

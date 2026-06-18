@@ -1,0 +1,133 @@
+[
+  {
+    "id": 1,
+    "name": "Masala Chai",
+    "nameHi": "मसाला चाय",
+    "description": "Traditional spiced tea with cardamom, ginger, cloves & cinnamon",
+    "price": 15,
+    "image": "/images/masala-chai.jpg",
+    "category": "tea",
+    "popular": true
+  },
+  {
+    "id": 2,
+    "name": "Elaichi Chai",
+    "nameHi": "इलायची चाय",
+    "description": "Aromatic cardamom-infused tea with fresh milk",
+    "price": 15,
+    "image": "/images/elaichi-tea.jpg",
+    "category": "tea"
+  },
+  {
+    "id": 3,
+    "name": "Kulhad Chai",
+    "nameHi": "कुल्हड़ चाय",
+    "description": "Chai served in traditional clay cup for earthy flavor",
+    "price": 20,
+    "image": "/images/kulhad-tea.jpg",
+    "category": "tea",
+    "popular": true
+  },
+  {
+    "id": 4,
+    "name": "Kesar Tea",
+    "nameHi": "केसर चाय",
+    "description": "Premium saffron tea with dry fruits — a royal experience",
+    "price": 30,
+    "image": "/images/special-tea.jpg",
+    "category": "tea",
+    "new": true
+  },
+  {
+    "id": 5,
+    "name": "Adrak Chai",
+    "nameHi": "अदरक चाय",
+    "description": "Strong ginger tea — perfect for cold mornings and evenings",
+    "price": 15,
+    "image": "/images/masala-chai.jpg",
+    "category": "tea"
+  },
+  {
+    "id": 6,
+    "name": "Black Tea (Kadak)",
+    "nameHi": "कड़क चाय",
+    "description": "Strong black tea brewed to perfection — bold and energizing",
+    "price": 10,
+    "image": "/images/kulhad-tea.jpg",
+    "category": "tea"
+  },
+  {
+    "id": 7,
+    "name": "Special Doodh Tea",
+    "nameHi": "स्पेशल दूध चाय",
+    "description": "Extra creamy milk tea with a rich, smooth taste",
+    "price": 20,
+    "image": "/images/elaichi-tea.jpg",
+    "category": "tea"
+  },
+  {
+    "id": 8,
+    "name": "Hot Coffee",
+    "nameHi": "हॉट कॉफ़ी",
+    "description": "Classic rich brewed coffee with steaming frothy milk",
+    "price": 25,
+    "image": "/images/special-tea.jpg",
+    "category": "coffee"
+  },
+  {
+    "id": 9,
+    "name": "Cold Coffee",
+    "nameHi": "कोल्ड कॉफ़ी",
+    "description": "Chilled creamy coffee blended with ice — summer favorite",
+    "price": 30,
+    "image": "/images/special-tea.jpg",
+    "category": "coffee",
+    "new": true
+  },
+  {
+    "id": 10,
+    "name": "Samosa",
+    "nameHi": "समोसा",
+    "description": "Crispy samosa with spicy potato filling — perfect chai partner",
+    "price": 15,
+    "image": "/images/snacks.jpg",
+    "category": "snacks",
+    "popular": true
+  },
+  {
+    "id": 11,
+    "name": "Biscuits & Rusk",
+    "nameHi": "बिस्कुट और रस्क",
+    "description": "Assorted biscuits and fresh rusk for dipping in chai",
+    "price": 10,
+    "image": "/images/snacks.jpg",
+    "category": "snacks"
+  },
+  {
+    "id": 12,
+    "name": "Bread Butter",
+    "nameHi": "ब्रेड बटर",
+    "description": "Fresh bread with butter — simple and satisfying",
+    "price": 15,
+    "image": "/images/snacks.jpg",
+    "category": "snacks"
+  },
+  {
+    "id": 13,
+    "name": "Lassi",
+    "nameHi": "लस्सी",
+    "description": "Traditional sweet lassi — refreshing Rajasthani taste",
+    "price": 25,
+    "image": "/images/elaichi-tea.jpg",
+    "category": "cold"
+  },
+  {
+    "id": 14,
+    "name": "Cold Drinks (Assorted)",
+    "nameHi": "कोल्ड ड्रिंक",
+    "description": "Chilled carbonated soft drinks to beat the heat",
+    "price": 20,
+    "image": "/images/elaichi-tea.jpg",
+    "category": "cold"
+  }
+]

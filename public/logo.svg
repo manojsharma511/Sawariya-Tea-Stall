@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="steamGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF9933" />
+      <stop offset="100%" stop-color="#FFD700" />
+    </linearGradient>
+    <linearGradient id="cupGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4A2C20" />
+      <stop offset="100%" stop-color="#2D1810" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE066" />
+      <stop offset="50%" stop-color="#FFD700" />
+      <stop offset="100%" stop-color="#CC9900" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Ring (Premium Branding) -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#goldGrad)" stroke-width="4" />
+  <circle cx="100" cy="100" r="84" fill="none" stroke="#4A2C20" stroke-width="1" stroke-dasharray="4,4" />
+
+  <!-- Steam forming "S" -->
+  <path d="M90 85 C85 65 115 60 110 45 C105 30 80 35 100 15 C103 12 107 14 105 18 C93 30 115 28 118 42 C122 55 93 62 98 75 C100 81 92 84 90 85 Z" fill="url(#steamGrad)" opacity="0.95" />
+  <path d="M96 85 C93 72 108 68 106 58 C104 48 90 50 100 35 C102 32 105 33 103 36 C95 44 110 42 111 52 C112 62 98 66 100 78 C101 82 98 84 96 85 Z" fill="url(#steamGrad)" opacity="0.6" />
+
+  <!-- Clay Tea Cup (Kulhad) -->
+  <path d="M65 95 C65 95 62 140 70 145 C78 150 122 150 130 145 C138 140 135 95 135 95 Z" fill="url(#cupGrad)" stroke="url(#goldGrad)" stroke-width="1.5" />
+  
+  <!-- Cup Rim (Lip) -->
+  <ellipse cx="100" cy="95" rx="35" ry="8" fill="#4A2C20" stroke="url(#goldGrad)" stroke-width="2" />
+  <ellipse cx="100" cy="95" rx="31" ry="5" fill="#2D1810" />
+
+  <!-- Tea Inside Cup -->
+  <ellipse cx="100" cy="95" rx="30" ry="4" fill="#D4A574" />
+
+  <!-- Gold Decorative Patterns on Cup -->
+  <path d="M72 110 Q100 120 128 110" fill="none" stroke="url(#goldGrad)" stroke-width="2" />
+  <path d="M74 125 Q100 135 126 125" fill="none" stroke="url(#goldGrad)" stroke-dasharray="2,2" stroke-width="1.5" />
+
+  <!-- Flourishes & Estd -->
+  <text x="100" y="170" font-family="'Playfair Display', serif" font-weight="bold" font-size="12" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">SAWARIYA</text>
+  <text x="100" y="182" font-family="'Poppins', sans-serif" font-size="7" fill="#FFF8F0" text-anchor="middle" letter-spacing="3">PREMIUM TEA</text>
+</svg>

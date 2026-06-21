@@ -42,7 +42,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const ADMIN_EMAIL = 'manu987546@gmail.com';
+const ADMIN_EMAIL = 'manojkumarsharma27096@gmail.com';
 const MOCK_USER_KEY = 'sawariya_mock_user';
 const ADMIN_MODE_SESSION_KEY = 'sawariya_admin_mode_active';
 const MOCK_ADMIN_CREDS_KEY = 'sawariya_mock_admin_creds';
@@ -50,7 +50,7 @@ const MOCK_USERS_ARRAY_KEY = 'sawariya_mock_users_list';
 
 const DEFAULT_ADMIN_CREDS = {
   username: 'admin',
-  password: 'sawariyapassword',
+  password: 'Sawariya@123',
   name: 'Manoj Kumar (Admin)'
 };
 
@@ -68,14 +68,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (savedMockUser) {
         try {
           const profile = JSON.parse(savedMockUser);
-          
+
           // Verify if user is mock admin and credentials flag is set
           const isVerifiedAdmin = profile.email === ADMIN_EMAIL && localStorage.getItem('sawariya_admin_verified') === 'true';
           const updatedProfile = {
             ...profile,
             isAdmin: isVerifiedAdmin
           };
-          
+
           setUser(updatedProfile);
 
           if (isVerifiedAdmin) {
@@ -94,9 +94,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else if (auth) {
       const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser) {
-          // Admin flag check strictly checks if email is admin and credentials verification flag is in localStorage
-          const isUserAdmin = firebaseUser.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() && 
-                              localStorage.getItem('sawariya_admin_verified') === 'true';
+          // Admin flag check strictly checks if email matches admin
+          const isUserAdmin = firebaseUser.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
           let displayName = firebaseUser.displayName;
 
           if (isUserAdmin) {
@@ -180,7 +179,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const provider = new GoogleAuthProvider();
         const result = await signInWithPopup(auth, provider);
         const firebaseUser = result.user;
-        
+
         // Google login devotee user
         const profile: UserProfile = {
           uid: firebaseUser.uid,
@@ -190,7 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isAdmin: false
         };
         setUser(profile);
-        
+
         // Sync devotee to firestore
         await setDoc(doc(db, 'users', firebaseUser.uid), {
           uid: firebaseUser.uid,
@@ -241,52 +240,69 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Real Firebase Email/Password Authentication for Admin
     try {
-      const docRef = doc(db, 'site_content', 'admin_profile');
-      const docSnap = await getDoc(docRef);
+      // 1. Authenticate with Firebase Auth first using email and password
+      const result = await signInWithEmailAndPassword(auth, ADMIN_EMAIL, password);
+      const firebaseUser = result.user;
+
+      // 2. Once authenticated, try reading custom admin username and name from Firestore
       let allowedUsername = 'admin';
       let allowedName = 'Manoj Kumar (Admin)';
 
-      if (docSnap.exists()) {
-        allowedUsername = docSnap.data().username || 'admin';
-        allowedName = docSnap.data().name || 'Manoj Kumar (Admin)';
+      try {
+        const docRef = doc(db, 'site_content', 'admin_profile');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          allowedUsername = docSnap.data().username || 'admin';
+          allowedName = docSnap.data().name || 'Manoj Kumar (Admin)';
+        } else {
+          // If no doc exists, write it now that we are authenticated as Admin
+          await setDoc(docRef, { username: 'admin', name: allowedName });
+        }
+      } catch (dbErr) {
+        console.warn('Could not read admin profile from Firestore, using default allowed username "admin":', dbErr);
       }
 
-      if (targetUsername !== allowedUsername) {
+      // 3. Verify if typed username matches configured allowed admin username (default 'admin')
+      if (targetUsername.toLowerCase() !== allowedUsername.toLowerCase()) {
+        console.error('Admin username mismatch');
+        await firebaseSignOut(auth);
         setLoading(false);
         return false;
       }
 
-      try {
-        const result = await signInWithEmailAndPassword(auth, ADMIN_EMAIL, password);
-        const firebaseUser = result.user;
-        
-        localStorage.setItem('sawariya_admin_verified', 'true');
-        
-        const profile: UserProfile = {
-          uid: firebaseUser.uid,
-          displayName: allowedName,
-          email: firebaseUser.email,
-          photoURL: '🙏',
-          isAdmin: true
-        };
-        setUser(profile);
-        setIsAdminMode(true);
-        sessionStorage.setItem(ADMIN_MODE_SESSION_KEY, 'true');
-        setShowLoginModal(false);
-        setLoading(false);
-        return true;
-      } catch (error: any) {
-        if (
-          (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') &&
-          password === 'sawariyapassword' &&
-          targetUsername === 'admin'
-        ) {
+      localStorage.setItem('sawariya_admin_verified', 'true');
+
+      const profile: UserProfile = {
+        uid: firebaseUser.uid,
+        displayName: allowedName,
+        email: firebaseUser.email,
+        photoURL: '🙏',
+        isAdmin: true
+      };
+      setUser(profile);
+      setIsAdminMode(true);
+      sessionStorage.setItem(ADMIN_MODE_SESSION_KEY, 'true');
+      setShowLoginModal(false);
+      setLoading(false);
+      return true;
+    } catch (err: any) {
+      if (
+        (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') &&
+        password === 'Sawariya@123' &&
+        targetUsername === 'admin'
+      ) {
+        try {
           console.log('Admin user account not found in Firebase Auth, auto-creating admin user...');
           const result = await createUserWithEmailAndPassword(auth, ADMIN_EMAIL, password);
           const firebaseUser = result.user;
+          const allowedName = 'Manoj Kumar (Admin)';
           await updateProfile(firebaseUser, { displayName: allowedName });
-          
-          await setDoc(docRef, { username: 'admin', name: allowedName });
+
+          try {
+            await setDoc(doc(db, 'site_content', 'admin_profile'), { username: 'admin', name: allowedName });
+          } catch (dbErr) {
+            console.warn('Could not write admin profile doc in Firestore:', dbErr);
+          }
 
           localStorage.setItem('sawariya_admin_verified', 'true');
 
@@ -303,11 +319,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setShowLoginModal(false);
           setLoading(false);
           return true;
+        } catch (createErr) {
+          console.error('Failed to auto-create admin user:', createErr);
         }
-        throw error;
       }
-    } catch (err) {
-      console.error('Credentials auth failed:', err);
+      console.error('Credentials admin auth failed:', err);
       setLoading(false);
       return false;
     }
@@ -316,7 +332,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUpDevotee = async (name: string, usernameOrEmail: string, password: string) => {
     setLoading(true);
     const targetUser = usernameOrEmail.trim().toLowerCase();
-    
+
     if (targetUser === 'admin') {
       setLoading(false);
       throw new Error('Username "admin" is reserved.');
@@ -325,7 +341,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (isMockEnabled) {
       const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_ARRAY_KEY) || '[]');
       const userExists = mockUsers.some((u: any) => u.username === targetUser || u.email === targetUser);
-      
+
       if (userExists) {
         setLoading(false);
         throw new Error('Username or Email already registered.');
@@ -355,7 +371,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const email = targetUser.includes('@') ? targetUser : `${targetUser}@sawariya.com`;
       const result = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(result.user, { displayName: name });
-      
+
       // Save profile metadata in firestore
       await setDoc(doc(db, 'users', result.user.uid), {
         uid: result.user.uid,
@@ -410,7 +426,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (isMockEnabled) {
       const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_ARRAY_KEY) || '[]');
-      const foundUser = mockUsers.find((u: any) => 
+      const foundUser = mockUsers.find((u: any) =>
         (u.username === targetUser || u.email === targetUser) && u.password === password
       );
 
@@ -429,7 +445,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const email = targetUser.includes('@') ? targetUser : `${targetUser}@sawariya.com`;
       const result = await signInWithEmailAndPassword(auth, email, password);
-      
+
       // Load display name
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       let displayName = result.user.displayName;
@@ -485,7 +501,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (isMockEnabled) {
       const mockUsers = JSON.parse(localStorage.getItem(MOCK_USERS_ARRAY_KEY) || '[]');
       const userIndex = mockUsers.findIndex((u: any) => u.uid === user?.uid);
-      
+
       if (userIndex !== -1) {
         mockUsers[userIndex].displayName = targetName;
         mockUsers[userIndex].photoURL = `https://api.dicebear.com/7.x/adventurer/svg?seed=${targetName}`;
@@ -493,7 +509,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           mockUsers[userIndex].password = password;
         }
         localStorage.setItem(MOCK_USERS_ARRAY_KEY, JSON.stringify(mockUsers));
-        
+
         const updated = {
           ...mockUsers[userIndex]
         };
@@ -515,19 +531,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await updatePassword(auth.currentUser, password);
       }
       const newPhotoURL = `https://api.dicebear.com/7.x/adventurer/svg?seed=${targetName}`;
-      await updateProfile(auth.currentUser, { 
+      await updateProfile(auth.currentUser, {
         displayName: targetName,
         photoURL: newPhotoURL
       });
-      
+
       await setDoc(doc(db, 'users', auth.currentUser.uid), {
         name: targetName,
         photoURL: newPhotoURL,
         updatedAt: new Date().toISOString()
       }, { merge: true });
 
-      setUser(prev => prev ? { 
-        ...prev, 
+      setUser(prev => prev ? {
+        ...prev,
         displayName: targetName,
         photoURL: newPhotoURL
       } : null);
@@ -557,14 +573,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       localStorage.setItem(MOCK_ADMIN_CREDS_KEY, JSON.stringify(creds));
       setUser(prev => prev ? { ...prev, displayName: targetName } : null);
-      
+
       const savedMockUser = localStorage.getItem(MOCK_USER_KEY);
       if (savedMockUser) {
         const profile = JSON.parse(savedMockUser);
         profile.displayName = targetName;
         localStorage.setItem(MOCK_USER_KEY, JSON.stringify(profile));
       }
-      
+
       setLoading(false);
       return;
     }

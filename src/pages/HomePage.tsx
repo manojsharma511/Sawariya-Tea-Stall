@@ -23,7 +23,7 @@ const defaultHero: HeroConfig = {
   shopNameHi: 'साँवरिया टी स्टॉल',
   subtitle: 'Serving the finest spiced tea and warm snacks to devotees at Khatu Shyam Ji',
   subtitleHi: 'खाटू श्याम जी आओ, साँवरिया की स्पेशल चाय का मज़ा लो',
-  bgImage: '/images/hero-bg.jpg'
+  bgImage: '/sawariya-photos/cb5dc902-122f-49a9-a4f6-d03afe90cb10.png'
 };
 
 const defaultContact: ContactConfig = {

@@ -1,58 +1,93 @@
 [
   {
-    "src": "/images/masala-chai.jpg",
-    "alt": "Masala Chai",
-    "caption": "Our Signature Masala Chai",
-    "captionHi": "हमारी मसाला चाय",
-    "category": "tea"
-  },
-  {
-    "src": "/images/kulhad-tea.jpg",
-    "alt": "Kulhad Chai",
-    "caption": "Traditional Kulhad Chai",
-    "captionHi": "कुल्हड़ चाय",
-    "category": "tea"
-  },
-  {
-    "src": "/images/special-tea.jpg",
-    "alt": "Special Kesar Tea",
-    "caption": "Special Kesar Tea",
-    "captionHi": "स्पेशल केसर चाय",
-    "category": "tea"
-  },
-  {
-    "src": "/images/snacks.jpg",
-    "alt": "Tea Time Snacks",
-    "caption": "Delicious Snacks",
-    "captionHi": "स्वादिष्ट नाश्ता",
-    "category": "snacks"
-  },
-  {
-    "src": "/images/about-bg.jpg",
-    "alt": "Our Tea Stall",
-    "caption": "Our Cozy Stall",
-    "captionHi": "हमारी दुकान",
+    "src": "/sawariya-photos/cb5dc902-122f-49a9-a4f6-d03afe90cb10.png",
+    "alt": "Sawariya Tea Stall full view near Toran Gate",
+    "caption": "Sawariya Tea Stall storefront near Toran Gate",
+    "captionHi": "तोरण गेट के पास हमारा साँवरिया टी स्टॉल",
     "category": "shop"
   },
   {
-    "src": "/images/elaichi-tea.jpg",
-    "alt": "Elaichi Tea",
-    "caption": "Elaichi Special",
-    "captionHi": "इलायची स्पेशल",
+    "src": "/sawariya-photos/f4aeda41-5550-46e3-8a88-a46e46a6769e.png",
+    "alt": "Spiced Chai in traditional clay cup",
+    "caption": "Our Special Kulhad Chai",
+    "captionHi": "हमारी स्पेशल कुल्हड़ चाय",
     "category": "tea"
   },
   {
-    "src": "/images/hero-bg.jpg",
-    "alt": "Tea Making",
-    "caption": "Fresh Brewing",
-    "captionHi": "ताज़ी चाय",
+    "src": "/sawariya-photos/a251a44f-d0aa-4c88-894c-b0ccf80c16ad.png",
+    "alt": "Owner Mukesh Kumar serving tea to devotees",
+    "caption": "Mukesh Kumar serving hot tea",
+    "captionHi": "चाय परोसते हुए मुकेश कुमार",
     "category": "shop"
   },
   {
-    "src": "/images/khatu-shyam.jpg",
-    "alt": "Khatu Shyam Temple",
-    "caption": "Khatu Shyam Ji Temple",
-    "captionHi": "खाटू श्याम जी मंदिर",
+    "src": "/sawariya-photos/336c8044-27f2-4c17-8a76-419fde413547.png",
+    "alt": "Brewing Hot Masala Tea",
+    "caption": "Traditional brewing process with spices",
+    "captionHi": "मसालों के साथ चाय तैयार करने की पारंपरिक विधि",
+    "category": "tea"
+  },
+  {
+    "src": "/sawariya-photos/44a932a8-1b25-4ab9-954c-37021b103281.png",
+    "alt": "Pouring Hot Spiced Chai",
+    "caption": "Freshly brewed hot tea",
+    "captionHi": "ताजी बनी हुई गर्मागर्म चाय",
+    "category": "tea"
+  },
+  {
+    "src": "/sawariya-photos/7a08f74a-2f4b-45d3-bd9b-9581045aa7a1.png",
+    "alt": "Devotees enjoying hot tea at the stall",
+    "caption": "Devotees enjoying tea near Toran Gate",
+    "captionHi": "तोरण गेट के पास चाय का आनंद लेते भक्त",
     "category": "customer"
+  },
+  {
+    "src": "/sawariya-photos/cb5dc902-122f-49a9-a4f6-d03afe90cb10.png",
+    "alt": "Baba Shyam Shringar Darshan",
+    "caption": "Shree Khatu Shyam Ji Shringar Darshan",
+    "captionHi": "श्री खाटू श्याम जी श्रृंगार दर्शन",
+    "category": "customer"
+  },
+  {
+    "src": "/sawariya-photos/f4aeda41-5550-46e3-8a88-a46e46a6769e.png",
+    "alt": "Beautiful view of Khatu Shyam Temple",
+    "caption": "Khatu Shyam Ji Mandir Entrance",
+    "captionHi": "खाटू श्याम जी मंदिर प्रवेश द्वार",
+    "category": "customer"
+  },
+  {
+    "src": "/sawariya-photos/a251a44f-d0aa-4c88-894c-b0ccf80c16ad.png",
+    "alt": "Shree Khatu Shyam Ji Toran Gate",
+    "caption": "Historic Toran Gate, Khatu Shyam Ji",
+    "captionHi": "ऐतिहासिक तोरण द्वार, खाटू श्याम जी",
+    "category": "customer"
+  },
+  {
+    "src": "/sawariya-photos/336c8044-27f2-4c17-8a76-419fde413547.png",
+    "alt": "Devotees gathering at Toran Gate",
+    "caption": "Pilgrims rush during Shyam Mela",
+    "captionHi": "श्याम मेले के दौरान उमड़ी भक्तों की भीड़",
+    "category": "customer"
+  },
+  {
+    "src": "/sawariya-photos/DSC_9368.JPG",
+    "alt": "Sawariya Tea Stall storefront layout",
+    "caption": "Cozy Stall storefront and banners",
+    "captionHi": "हमारी दुकान का आकर्षक दृश्य",
+    "category": "shop"
+  },
+  {
+    "src": "/sawariya-photos/DSC_9373.JPG",
+    "alt": "Brewing tea in traditional vessel",
+    "caption": "Authentic tea preparation",
+    "captionHi": "पारंपरिक तरीके से चाय बनाना",
+    "category": "tea"
+  },
+  {
+    "src": "/sawariya-photos/DSC_9374.JPG",
+    "alt": "Brewing tea with cardamom and ginger",
+    "caption": "Cardamom and ginger brewing details",
+    "captionHi": "इलायची और अदरक वाली विशेष चाय",
+    "category": "tea"
   }
 ]

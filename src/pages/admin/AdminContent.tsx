@@ -178,7 +178,7 @@ export default function AdminContent() {
   return (
     <div className="space-y-6">
       {/* Sub Tabs Controls */}
-      <div className="flex gap-2 border-b border-gray-150 pb-4">
+      <div className="flex flex-wrap gap-2 border-b border-gray-150 pb-4">
         {[
           { id: 'hero', name: 'Hero Banner', icon: <LayoutGrid size={14} /> },
           { id: 'contact', name: 'Contact Details', icon: <Phone size={14} /> },

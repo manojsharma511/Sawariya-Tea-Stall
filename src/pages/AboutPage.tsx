@@ -33,7 +33,7 @@ const defaultAbout: AboutConfig = {
   ownerName: 'Mukesh Kumar',
   ownerNameHi: 'मनोज कुमार',
   ownerTitle: 'Owner & Tea Master',
-  ownerImage: '/images/about-bg.jpg',
+  ownerImage: '/sawariya-photos/a251a44f-d0aa-4c88-894c-b0ccf80c16ad.png',
   stats: [
     { icon: 'Coffee', value: '1000+', label: 'Cups Daily', labelHi: 'कप प्रतिदिन' },
     { icon: 'Users', value: '10K+', label: 'Happy Customers', labelHi: 'खुश ग्राहक' },

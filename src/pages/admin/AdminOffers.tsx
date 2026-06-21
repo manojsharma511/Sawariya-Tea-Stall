@@ -219,14 +219,14 @@ export default function AdminOffers() {
 
       {/* Custom Add / Edit Modal Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 border border-gray-100 shadow-2xl relative my-8 animate-scale-in">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-saffron" />
-            <h3 className="font-heading text-xl font-bold text-secondary mb-4">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 border border-gray-100 shadow-2xl relative animate-scale-in max-h-[90vh] flex flex-col my-auto">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-saffron shrink-0" />
+            <h3 className="font-heading text-xl font-bold text-secondary mb-4 shrink-0">
               {editingItem ? 'Edit Special Offer' : 'Create Special Offer'}
             </h3>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto pr-1 flex-grow">
               {/* Type Select */}
               <div>
                 <label className="block text-xs font-semibold text-gray-500 mb-1">Offer Type</label>

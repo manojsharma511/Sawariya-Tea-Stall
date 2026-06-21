@@ -86,25 +86,25 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           {/* Dashboard Left Sidebar Tabs */}
-          <div className="lg:col-span-1 space-y-3">
+          <div className="lg:col-span-1 flex flex-col gap-3">
             <a
               href="/"
-              className="px-4 py-3 bg-white hover:bg-gray-50 border border-gray-100 text-secondary rounded-2xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm"
+              className="px-4 py-3 bg-white hover:bg-gray-50 border border-gray-100 text-secondary rounded-2xl text-xs font-bold transition-all flex items-center justify-center lg:justify-start gap-2 shadow-sm self-stretch"
             >
               <ArrowLeft size={14} />
               <span>Back to Public Site</span>
             </a>
 
-            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-2">
-              <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider px-2 block mb-3">Management</span>
+            <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-sm flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-3 lg:pb-5 w-full scrollbar-none">
+              <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider px-2 hidden lg:block mb-3 shrink-0">Management</span>
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold flex items-center gap-3 transition-all ${
+                  className={`px-4 py-3.5 rounded-2xl text-xs font-semibold flex items-center gap-3 transition-all shrink-0 lg:w-full ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r from-saffron to-accent text-white shadow-lg shadow-saffron/15 scale-102 font-bold'
-                      : 'text-secondary-light hover:bg-saffron/5 hover:text-saffron'
+                      : 'text-secondary-light hover:bg-saffron/5 hover:text-saffron bg-gray-50/50 hover:bg-gray-100/50 border border-gray-100/30'
                   }`}
                 >
                   <span className="shrink-0">{tab.icon}</span>

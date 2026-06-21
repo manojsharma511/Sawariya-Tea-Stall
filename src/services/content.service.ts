@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage, isMockEnabled } from './firebase';
-import { triggerMockUpdate } from '../hooks/useRealTime';
+import { triggerMockUpdate, sanitizeImagePaths } from '../hooks/useRealTime';
 
 import defaultMenu from '../data/menu.json';
 import defaultGallery from '../data/gallery.json';
@@ -193,13 +193,17 @@ export const contentService = {
 
       return items.map(item => {
         const priceObj = prices.find(p => p.id === item.id);
-        return { ...item, price: priceObj ? priceObj.price : 0 };
+        return sanitizeImagePaths({ ...item, price: priceObj ? priceObj.price : 0 });
       });
 
     } catch (e) {
-      console.error('Firestore getMenu failed, falling back:', e);
-      // Mock Fallback
-      return this.getMenu(); // falls back dynamically
+      console.error('Firestore getMenu failed, falling back to local fallback:', e);
+      // Clean fallback using the defaultMenu to prevent stack overflow recursion
+      const items = defaultMenu.map((m, idx) => {
+        const { price, ...rest } = m;
+        return { ...rest, id: `menu_${idx}`, price };
+      });
+      return items;
     }
   },
 
@@ -336,7 +340,29 @@ export const contentService = {
         }
         return this.getGallery();
       }
-      return items;
+
+      // Auto-sync missing gallery defaults (for migrating existing databases)
+      const existingSrcs = new Set(items.map(item => item.src));
+      let addedAny = false;
+      for (const defaultImg of defaultGallery) {
+        if (!existingSrcs.has(defaultImg.src)) {
+          await addDoc(collection(db, 'gallery'), {
+            ...defaultImg,
+            createdAt: Timestamp.now()
+          });
+          addedAny = true;
+        }
+      }
+      if (addedAny) {
+        const updatedSnapshot = await getDocs(q);
+        const updatedItems: GalleryItem[] = [];
+        updatedSnapshot.forEach(doc => {
+          updatedItems.push({ id: doc.id, ...doc.data() } as GalleryItem);
+        });
+        return updatedItems;
+      }
+
+      return items.map(item => sanitizeImagePaths(item));
     } catch (e) {
       console.error('Firestore getGallery failed, falling back:', e);
       return getMockData<GalleryItem[]>(KEYS.GALLERY, defaultGallery.map((g, idx) => ({ ...g, id: `gallery_${idx}` })));
@@ -489,7 +515,7 @@ export const contentService = {
       shopNameHi: defaultBusiness.shopNameHi,
       subtitle: 'Serving the finest spiced tea and warm snacks to devotees at Khatu Shyam Ji',
       subtitleHi: 'खाटू श्याम जी आओ, साँवरिया की स्पेशल चाय का मज़ा लो',
-      bgImage: '/images/hero-bg.jpg'
+      bgImage: '/sawariya-photos/cb5dc902-122f-49a9-a4f6-d03afe90cb10.png'
     };
 
     if (isMockEnabled) {
@@ -500,9 +526,14 @@ export const contentService = {
       const docRef = doc(db, 'site_content', 'hero');
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        return docSnap.data() as HeroConfig;
+        const data = docSnap.data() as HeroConfig;
+        return sanitizeImagePaths(data);
       } else {
-        await setDoc(docRef, defaultHero);
+        try {
+          await setDoc(docRef, defaultHero);
+        } catch (e) {
+          console.warn('Guest user cannot seed default hero config in Firestore (this is expected):', e);
+        }
         return defaultHero;
       }
     } catch (e) {
@@ -584,11 +615,11 @@ export const contentService = {
   async getAboutConfig(): Promise<AboutConfig> {
     const defaultAbout: AboutConfig = {
       story: 'Welcome to Sawariya Tea Stall, located at the heart of the holy town of Khatu Shyam Ji, right near the iconic Toran Gate. We have been serving the most refreshing and flavorful spiced tea to thousands of devotees and visitors who come to seek blessings at the revered Khatu Shyam Ji Temple.\n\nRun by Mukesh Kumar, our tea stall is more than just a place for chai — it\'s a warm sanctuary where pilgrims rest after long journeys, seek refreshments, and leave feeling revitalized. Every single cup is brewed with pure dedication, using fresh premium Assam leaves, fresh milk, and hand-ground ginger, cardamom, and secret spices.',
-      storyHi: 'साँवरिया टी स्टॉल में आपका स्वागत है। हम खाटू श्याम जी के तोरण गेट के पास स्थित हैं। बाबा श्याम के दर्शन के बाद हमारी कुल्हड़ चाय का स्वाद आपके सफर को हमेशा के लिए यादगार बना देगा। मनोज जी द्वारा संचालित यह दुकान केवल चाय की दुकान नहीं, बल्कि भक्तों की थकान मिटाने और आराम करने की जगह है। 🙏',
+      storyHi: 'साँवरिया टी स्टॉल में स्वागत है। हम खाटू श्याम जी के तोरण गेट के पास स्थित हैं। बाबा श्याम के दर्शन के बाद हमारी कुल्हड़ चाय का स्वाद आपके सफर को हमेशा के लिए यादगार बना देगा। मनोज जी द्वारा संचालित यह दुकान केवल चाय की दुकान नहीं, बल्कि भक्तों की थकान मिटाने और आराम करने की जगह है। 🙏',
       ownerName: defaultBusiness.ownerName,
       ownerNameHi: defaultBusiness.ownerNameHi,
       ownerTitle: 'Owner & Tea Master',
-      ownerImage: '/images/about-bg.jpg',
+      ownerImage: '/sawariya-photos/a251a44f-d0aa-4c88-894c-b0ccf80c16ad.png',
       stats: [
         { icon: 'Coffee', value: '1000+', label: 'Cups Daily', labelHi: 'कप प्रतिदिन' },
         { icon: 'Users', value: '10K+', label: 'Happy Customers', labelHi: 'खुश ग्राहक' },
@@ -625,9 +656,14 @@ export const contentService = {
       const docRef = doc(db, 'site_content', 'about');
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        return docSnap.data() as AboutConfig;
+        const data = docSnap.data() as AboutConfig;
+        return sanitizeImagePaths(data);
       } else {
-        await setDoc(docRef, defaultAbout);
+        try {
+          await setDoc(docRef, defaultAbout);
+        } catch (e) {
+          console.warn('Guest user cannot seed default about config in Firestore (this is expected):', e);
+        }
         return defaultAbout;
       }
     } catch (e) {

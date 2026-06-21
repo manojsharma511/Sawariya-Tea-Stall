@@ -74,8 +74,8 @@ export default function AdminPrices() {
         <p className="text-gray-400 text-xs mt-0.5">Edit price values in real-time. Changes sync instantly to all public client views.</p>
       </div>
 
-      <div className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-x-auto">
+        <table className="w-full text-left border-collapse min-w-[600px] md:min-w-0">
           <thead>
             <tr className="bg-cream border-b border-gray-100 text-secondary text-xs uppercase tracking-wider font-semibold">
               <th className="p-4 md:p-5">Item Details</th>

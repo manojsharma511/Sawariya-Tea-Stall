@@ -80,9 +80,9 @@ export default function AdminOffers() {
       );
 
       setIsOpen(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to save offer.');
+      setErrorMessage(`Failed to save offer: ${err.message || err}`);
     } finally {
       setSubmitting(false);
     }
@@ -94,9 +94,9 @@ export default function AdminOffers() {
         ...item,
         active: !item.active
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to toggle status.');
+      setErrorMessage(`Failed to toggle status: ${err.message || err}`);
     }
   };
 
@@ -104,9 +104,9 @@ export default function AdminOffers() {
     try {
       await contentService.deleteOffer(id);
       setDeleteConfirmId(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to delete offer.');
+      setErrorMessage(`Failed to delete offer: ${err.message || err}`);
     }
   };
 

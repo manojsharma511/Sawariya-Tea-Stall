@@ -140,7 +140,7 @@ export default function HomePage() {
         <div className="absolute inset-0">
           <img
             src={hero.bgImage}
-            alt="Sawariya Tea Stall Background"
+            alt="Best Tea Stall in Khatu Shyam Ji near Toran Gate"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/80" />
@@ -159,11 +159,11 @@ export default function HomePage() {
             </span>
           </div>
 
-          <h1 className="font-heading text-6xl sm:text-7xl md:text-8xl font-bold text-white mb-2 leading-tight drop-shadow-lg">
-            <span className="text-saffron">{hero.shopName.split(' ')[0]}</span>
+          <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-2 leading-tight drop-shadow-lg">
+            Best Tea Stall in <span className="text-saffron">Khatu Shyam Ji</span>
           </h1>
           <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-light text-white/90 mb-4 tracking-wider">
-            {hero.shopName.split(' ').slice(1).join(' ')}
+            Sawariya Tea Stall
           </h2>
           <p className="font-hindi text-2xl md:text-3xl text-primary-light mb-6">
             {hero.shopNameHi}
@@ -265,14 +265,17 @@ export default function HomePage() {
               🔥 Best Sellers
             </span>
             <h2 className="font-heading text-3xl md:text-5xl font-bold text-secondary mb-4">
-              Popular <span className="text-saffron">Chai & Snacks</span>
+              Famous <span className="text-saffron">Kulhad Chai & Snacks</span> in Khatu Shyam Ji
             </h2>
-            <p className="font-hindi text-xl text-primary-dark mb-4">विशेष लोकप्रिय आइटम</p>
+            <p className="font-hindi text-xl text-primary-dark mb-4">खाटू श्याम जी का सबसे मशहूर कुलहद चाय</p>
             <div className="flex items-center justify-center gap-3">
               <div className="h-[2px] w-12 bg-gradient-to-r from-transparent to-saffron" />
               <div className="w-2 h-2 rounded-full bg-saffron" />
               <div className="h-[2px] w-12 bg-gradient-to-l from-transparent to-saffron" />
             </div>
+            <p className="text-gray-500 max-w-xl mx-auto mt-4 text-sm md:text-base">
+              Best Kulhad Chai in Khatu | Masala Tea | Special Tea | Fresh Snacks near Toran Gate
+            </p>
           </div>
 
           {popularItems.length === 0 ? (
@@ -285,13 +288,14 @@ export default function HomePage() {
                   className="group bg-white rounded-3xl overflow-hidden shadow-lg shadow-black/5 hover:shadow-2xl hover:shadow-saffron/10 hover:-translate-y-1.5 transition-all duration-500 border border-gray-100"
                 >
                   <div className="relative h-56 overflow-hidden">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                    ) : (
+                     {item.image ? (
+                       <img
+                         src={item.image}
+                         alt={`Best Kulhad Chai in Khatu - ${item.name} at Sawariya Tea Stall`}
+                         loading="lazy"
+                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                       />
+                     ) : (
                       <div className="w-full h-full bg-orange-50/50 flex items-center justify-center text-4xl">☕</div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
@@ -346,8 +350,7 @@ export default function HomePage() {
           </div>
 
           <h2 className="font-heading text-3xl md:text-5xl font-bold mb-4 leading-tight">
-            Visiting Khatu Shyam Ji?<br />
-            <span className="text-yellow-200">Taste the Best Kulhad Chai!</span>
+            Special Tea for Khatu Shyam <span className="text-yellow-200">Devotees</span>
           </h2>
           <p className="font-hindi text-xl md:text-2xl text-white/95 mb-6">
             खाटू श्याम जी आओ, साँवरिया की स्पेशल चाय का मज़ा लो
@@ -412,7 +415,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-3 pt-4 border-t border-gray-50">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-saffron/20 to-accent/20 flex items-center justify-center text-lg overflow-hidden shrink-0">
                       {t.avatar && t.avatar.startsWith('http') ? (
-                        <img src={t.avatar} alt={t.name} className="w-full h-full object-cover" />
+                        <img src={t.avatar} alt={`Best Kulhad Chai review by ${t.name}, Khatu Shyam Ji`} className="w-full h-full object-cover" />
                       ) : (
                         <span>{t.avatar || '🧑'}</span>
                       )}

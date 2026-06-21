@@ -1,13 +1,63 @@
 import { useState, useEffect } from 'react';
 import { contentService, HeroConfig, ContactConfig, AboutConfig } from '../../services/content.service';
+import { useRealTimeDocument } from '../../hooks/useRealTime';
 import { LayoutGrid, Phone, User, Save, Upload, Sparkles, AlertCircle } from 'lucide-react';
+
+import defaultBusiness from '../../data/business.json';
+
+const defaultHero: HeroConfig = {
+  blessing: defaultBusiness.blessing,
+  shopName: defaultBusiness.shopName,
+  shopNameHi: defaultBusiness.shopNameHi,
+  subtitle: 'Serving the finest spiced tea and warm snacks to devotees at Khatu Shyam Ji',
+  subtitleHi: 'खाटू श्याम जी आओ, साँवरिया की स्पेशल चाय का मज़ा लो',
+  bgImage: '/sawariya-photos/cb5dc902-122f-49a9-a4f6-d03afe90cb10.png'
+};
+
+const defaultContact: ContactConfig = {
+  phone: defaultBusiness.phone,
+  whatsapp: defaultBusiness.whatsapp,
+  email: defaultBusiness.email,
+  address: defaultBusiness.address,
+  addressHi: defaultBusiness.addressHi,
+  workingHours: {
+    daily: defaultBusiness.workingHours.daily,
+    dailyHi: defaultBusiness.workingHours.dailyHi,
+    festivals: defaultBusiness.workingHours.festivals,
+    festivalsHi: defaultBusiness.workingHours.festivalsHi,
+    ekadashi: defaultBusiness.workingHours.ekadashi,
+    ekadashiHi: defaultBusiness.workingHours.ekadashiHi
+  }
+};
+
+const defaultAbout: AboutConfig = {
+  story: '',
+  storyHi: '',
+  ownerName: defaultBusiness.ownerName,
+  ownerNameHi: defaultBusiness.ownerNameHi,
+  ownerTitle: 'Owner & Tea Master',
+  ownerImage: '/sawariya-photos/a251a44f-d0aa-4c88-894c-b0ccf80c16ad.png',
+  stats: [
+    { icon: 'Coffee', value: '1000+', label: 'Cups Daily', labelHi: 'कप प्रतिदिन' },
+    { icon: 'Users', value: '10K+', label: 'Happy Customers', labelHi: 'खुश ग्राहक' },
+    { icon: 'Clock', value: '6AM - 10PM', label: 'Open Hours', labelHi: 'खुलने का समय' },
+    { icon: 'Award', value: 'Premium', label: 'Near Toran Gate', labelHi: 'तोरण गेट पर' }
+  ],
+  coreValues: []
+};
 
 export default function AdminContent() {
   const [subTab, setSubTab] = useState<'hero' | 'contact' | 'about'>('hero');
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Real-time document hooks
+  const { data: heroData, loading: loadingHero } = useRealTimeDocument<HeroConfig>('site_content', 'hero', defaultHero);
+  const { data: contactData, loading: loadingContact } = useRealTimeDocument<ContactConfig>('site_content', 'contact', defaultContact);
+  const { data: aboutData, loading: loadingAbout } = useRealTimeDocument<AboutConfig>('site_content', 'about', defaultAbout);
+
+  const loading = loadingHero || loadingContact || loadingAbout;
 
   // --- Hero Banner Form Fields ---
   const [blessing, setBlessing] = useState('');
@@ -40,49 +90,45 @@ export default function AdminContent() {
   const [ownerImageFile, setOwnerImageFile] = useState<File | null>(null);
   const [ownerImageUrl, setOwnerImageUrl] = useState('');
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      
-      const heroConfig = await contentService.getHeroConfig();
-      setBlessing(heroConfig.blessing);
-      setShopName(heroConfig.shopName);
-      setShopNameHi(heroConfig.shopNameHi);
-      setHeroSubtitle(heroConfig.subtitle);
-      setHeroSubtitleHi(heroConfig.subtitleHi);
-      setHeroBgUrl(heroConfig.bgImage);
-
-      const contactConfig = await contentService.getContactConfig();
-      setPhone(contactConfig.phone);
-      setWhatsapp(contactConfig.whatsapp);
-      setEmail(contactConfig.email);
-      setAddress(contactConfig.address);
-      setAddressHi(contactConfig.addressHi);
-      setHoursDaily(contactConfig.workingHours.daily);
-      setHoursDailyHi(contactConfig.workingHours.dailyHi);
-      setHoursFestivals(contactConfig.workingHours.festivals);
-      setHoursFestivalsHi(contactConfig.workingHours.festivalsHi);
-      setHoursEkadashi(contactConfig.workingHours.ekadashi);
-      setHoursEkadashiHi(contactConfig.workingHours.ekadashiHi);
-
-      const aboutConfig = await contentService.getAboutConfig();
-      setAboutStory(aboutConfig.story);
-      setAboutStoryHi(aboutConfig.storyHi);
-      setOwnerName(aboutConfig.ownerName);
-      setOwnerNameHi(aboutConfig.ownerNameHi);
-      setOwnerTitle(aboutConfig.ownerTitle);
-      setOwnerImageUrl(aboutConfig.ownerImage);
-
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+  // Sync real-time data → form fields (only when not saving, to avoid overwriting mid-edit)
+  useEffect(() => {
+    if (!saving && heroData) {
+      setBlessing(heroData.blessing || '');
+      setShopName(heroData.shopName || '');
+      setShopNameHi(heroData.shopNameHi || '');
+      setHeroSubtitle(heroData.subtitle || '');
+      setHeroSubtitleHi(heroData.subtitleHi || '');
+      setHeroBgUrl(heroData.bgImage || '');
     }
-  };
+  }, [heroData]);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!saving && contactData) {
+      setPhone(contactData.phone || '');
+      setWhatsapp(contactData.whatsapp || '');
+      setEmail(contactData.email || '');
+      setAddress(contactData.address || '');
+      setAddressHi(contactData.addressHi || '');
+      setHoursDaily(contactData.workingHours?.daily || '');
+      setHoursDailyHi(contactData.workingHours?.dailyHi || '');
+      setHoursFestivals(contactData.workingHours?.festivals || '');
+      setHoursFestivalsHi(contactData.workingHours?.festivalsHi || '');
+      setHoursEkadashi(contactData.workingHours?.ekadashi || '');
+      setHoursEkadashiHi(contactData.workingHours?.ekadashiHi || '');
+    }
+  }, [contactData]);
+
+  useEffect(() => {
+    if (!saving && aboutData) {
+      setAboutStory(aboutData.story || '');
+      setAboutStoryHi(aboutData.storyHi || '');
+      setOwnerName(aboutData.ownerName || '');
+      setOwnerNameHi(aboutData.ownerNameHi || '');
+      setOwnerTitle(aboutData.ownerTitle || '');
+      setOwnerImageUrl(aboutData.ownerImage || '');
+    }
+  }, [aboutData]);
+
 
   const showSuccess = (msg: string) => {
     setSuccessMsg(msg);
@@ -104,9 +150,9 @@ export default function AdminContent() {
       await contentService.saveHeroConfig(configPayload, heroBgFile || undefined);
       setHeroBgFile(null);
       showSuccess('Hero Banner configuration updated successfully!');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to save Hero configurations.');
+      setErrorMessage(`Failed to save Hero configurations: ${err.message || err}`);
     } finally {
       setSaving(false);
     }
@@ -133,9 +179,9 @@ export default function AdminContent() {
       };
       await contentService.saveContactConfig(configPayload);
       showSuccess('Contact details & working hours updated successfully!');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to save Contact configurations.');
+      setErrorMessage(`Failed to save Contact configurations: ${err.message || err}`);
     } finally {
       setSaving(false);
     }
@@ -145,9 +191,8 @@ export default function AdminContent() {
     e.preventDefault();
     setSaving(true);
     try {
-      const currentAbout = await contentService.getAboutConfig();
       const configPayload: AboutConfig = {
-        ...currentAbout,
+        ...aboutData,
         story: aboutStory,
         storyHi: aboutStoryHi,
         ownerName,
@@ -158,9 +203,9 @@ export default function AdminContent() {
       await contentService.saveAboutConfig(configPayload, ownerImageFile || undefined);
       setOwnerImageFile(null);
       showSuccess('About page content updated successfully!');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to save About configurations.');
+      setErrorMessage(`Failed to save About configurations: ${err.message || err}`);
     } finally {
       setSaving(false);
     }

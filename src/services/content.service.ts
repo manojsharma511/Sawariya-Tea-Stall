@@ -217,9 +217,14 @@ export const contentService = {
         imageUrl = await getDownloadURL(snapshot.ref);
       } catch (err) {
         console.error('Error uploading menu image:', err);
+        throw new Error(`Image upload failed: ${err instanceof Error ? err.message : String(err)}`);
       }
     } else if (imageFile && isMockEnabled) {
-      imageUrl = await fileToBase64(imageFile);
+      try {
+        imageUrl = await fileToBase64(imageFile);
+      } catch (err) {
+        throw new Error(`File conversion failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
     }
 
     const itemData = {
@@ -264,22 +269,27 @@ export const contentService = {
       return { id: activeId, ...itemData, price: targetPrice } as MenuItem;
     }
 
-    if (item.id) {
-      // Edit
-      const docRef = doc(db, 'menu_items', item.id);
-      await updateDoc(docRef, itemData);
+    try {
+      if (item.id) {
+        // Edit
+        const docRef = doc(db, 'menu_items', item.id);
+        await updateDoc(docRef, itemData);
 
-      // Update Price
-      await setDoc(doc(db, 'prices', item.id), { price: targetPrice }, { merge: true });
-      return { id: item.id, ...itemData, price: targetPrice } as MenuItem;
-    } else {
-      // Add
-      const fullNewDoc = { ...itemData, createdAt: Timestamp.now() };
-      const docRef = await addDoc(collection(db, 'menu_items'), fullNewDoc);
+        // Update Price
+        await setDoc(doc(db, 'prices', item.id), { price: targetPrice }, { merge: true });
+        return { id: item.id, ...itemData, price: targetPrice } as MenuItem;
+      } else {
+        // Add
+        const fullNewDoc = { ...itemData, createdAt: Timestamp.now() };
+        const docRef = await addDoc(collection(db, 'menu_items'), fullNewDoc);
 
-      // Write Price
-      await setDoc(doc(db, 'prices', docRef.id), { price: targetPrice });
-      return { id: docRef.id, ...fullNewDoc, price: targetPrice } as MenuItem;
+        // Write Price
+        await setDoc(doc(db, 'prices', docRef.id), { price: targetPrice });
+        return { id: docRef.id, ...fullNewDoc, price: targetPrice } as MenuItem;
+      }
+    } catch (err) {
+      console.error('Firestore saveMenuItem failed:', err);
+      throw err;
     }
   },
 
@@ -296,8 +306,13 @@ export const contentService = {
       return;
     }
 
-    const priceDocRef = doc(db, 'prices', itemId);
-    await setDoc(priceDocRef, { price: Number(newPrice) }, { merge: true });
+    try {
+      const priceDocRef = doc(db, 'prices', itemId);
+      await setDoc(priceDocRef, { price: Number(newPrice) }, { merge: true });
+    } catch (err) {
+      console.error('Firestore updateItemPrice failed:', err);
+      throw err;
+    }
   },
 
   async deleteMenuItem(id: string): Promise<void> {
@@ -310,8 +325,13 @@ export const contentService = {
       return;
     }
 
-    await deleteDoc(doc(db, 'menu_items', id));
-    await deleteDoc(doc(db, 'prices', id));
+    try {
+      await deleteDoc(doc(db, 'menu_items', id));
+      await deleteDoc(doc(db, 'prices', id));
+    } catch (err) {
+      console.error('Firestore deleteMenuItem failed:', err);
+      throw err;
+    }
   },
 
   // ==========================================
@@ -373,11 +393,20 @@ export const contentService = {
     let imageUrl = '';
 
     if (!isMockEnabled && storage) {
-      const fileRef = ref(storage, `gallery/${Date.now()}_${imageFile.name}`);
-      const snapshot = await uploadBytes(fileRef, imageFile);
-      imageUrl = await getDownloadURL(snapshot.ref);
+      try {
+        const fileRef = ref(storage, `gallery/${Date.now()}_${imageFile.name}`);
+        const snapshot = await uploadBytes(fileRef, imageFile);
+        imageUrl = await getDownloadURL(snapshot.ref);
+      } catch (err) {
+        console.error('Error uploading gallery image:', err);
+        throw new Error(`Image upload failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
     } else {
-      imageUrl = await fileToBase64(imageFile);
+      try {
+        imageUrl = await fileToBase64(imageFile);
+      } catch (err) {
+        throw new Error(`File conversion failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
     }
 
     const newItemData = {
@@ -394,8 +423,13 @@ export const contentService = {
       return created;
     }
 
-    const docRef = await addDoc(collection(db, 'gallery'), newItemData);
-    return { id: docRef.id, ...newItemData } as GalleryItem;
+    try {
+      const docRef = await addDoc(collection(db, 'gallery'), newItemData);
+      return { id: docRef.id, ...newItemData } as GalleryItem;
+    } catch (err) {
+      console.error('Firestore addGalleryItem failed:', err);
+      throw err;
+    }
   },
 
   async deleteGalleryItem(id: string): Promise<void> {
@@ -406,8 +440,13 @@ export const contentService = {
       return;
     }
 
-    const docRef = doc(db, 'gallery', id);
-    await deleteDoc(docRef);
+    try {
+      const docRef = doc(db, 'gallery', id);
+      await deleteDoc(docRef);
+    } catch (err) {
+      console.error('Firestore deleteGalleryItem failed:', err);
+      throw err;
+    }
   },
 
   // ==========================================
@@ -484,14 +523,19 @@ export const contentService = {
       return { id: activeId, ...payload } as OfferItem;
     }
 
-    if (offer.id) {
-      const docRef = doc(db, 'offers', offer.id);
-      await updateDoc(docRef, payload);
-      return { id: offer.id, ...payload } as OfferItem;
-    } else {
-      const fullDoc = { ...payload, createdAt: Timestamp.now() };
-      const docRef = await addDoc(collection(db, 'offers'), fullDoc);
-      return { id: docRef.id, ...fullDoc } as OfferItem;
+    try {
+      if (offer.id) {
+        const docRef = doc(db, 'offers', offer.id);
+        await updateDoc(docRef, payload);
+        return { id: offer.id, ...payload } as OfferItem;
+      } else {
+        const fullDoc = { ...payload, createdAt: Timestamp.now() };
+        const docRef = await addDoc(collection(db, 'offers'), fullDoc);
+        return { id: docRef.id, ...fullDoc } as OfferItem;
+      }
+    } catch (err) {
+      console.error('Firestore saveOffer failed:', err);
+      throw err;
     }
   },
 
@@ -502,7 +546,12 @@ export const contentService = {
       return;
     }
 
-    await deleteDoc(doc(db, 'offers', id));
+    try {
+      await deleteDoc(doc(db, 'offers', id));
+    } catch (err) {
+      console.error('Firestore deleteOffer failed:', err);
+      throw err;
+    }
   },
 
   // ==========================================
@@ -546,11 +595,20 @@ export const contentService = {
     let bgImageUrl = config.bgImage;
 
     if (bgImageFile && !isMockEnabled && storage) {
-      const fileRef = ref(storage, `site_content/hero_bg_${Date.now()}`);
-      const snapshot = await uploadBytes(fileRef, bgImageFile);
-      bgImageUrl = await getDownloadURL(snapshot.ref);
+      try {
+        const fileRef = ref(storage, `site_content/hero_bg_${Date.now()}`);
+        const snapshot = await uploadBytes(fileRef, bgImageFile);
+        bgImageUrl = await getDownloadURL(snapshot.ref);
+      } catch (err) {
+        console.error('Error uploading hero background:', err);
+        throw new Error(`Background upload failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
     } else if (bgImageFile && isMockEnabled) {
-      bgImageUrl = await fileToBase64(bgImageFile);
+      try {
+        bgImageUrl = await fileToBase64(bgImageFile);
+      } catch (err) {
+        throw new Error(`File conversion failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
     }
 
     const updated = { ...config, bgImage: bgImageUrl };
@@ -561,7 +619,12 @@ export const contentService = {
     }
 
     const docRef = doc(db, 'site_content', 'hero');
-    await setDoc(docRef, updated, { merge: true });
+    try {
+      await setDoc(docRef, updated, { merge: true });
+    } catch (err) {
+      console.error('Firestore saveHeroConfig failed:', err);
+      throw err;
+    }
     return updated;
   },
 
@@ -607,9 +670,14 @@ export const contentService = {
       return config;
     }
 
-    const docRef = doc(db, 'site_content', 'contact');
-    await setDoc(docRef, config, { merge: true });
-    return config;
+    try {
+      const docRef = doc(db, 'site_content', 'contact');
+      await setDoc(docRef, config, { merge: true });
+      return config;
+    } catch (err) {
+      console.error('Firestore saveContactConfig failed:', err);
+      throw err;
+    }
   },
 
   async getAboutConfig(): Promise<AboutConfig> {
@@ -676,11 +744,20 @@ export const contentService = {
     let ownerImageUrl = config.ownerImage;
 
     if (ownerImageFile && !isMockEnabled && storage) {
-      const fileRef = ref(storage, `site_content/owner_image_${Date.now()}`);
-      const snapshot = await uploadBytes(fileRef, ownerImageFile);
-      ownerImageUrl = await getDownloadURL(snapshot.ref);
+      try {
+        const fileRef = ref(storage, `site_content/owner_image_${Date.now()}`);
+        const snapshot = await uploadBytes(fileRef, ownerImageFile);
+        ownerImageUrl = await getDownloadURL(snapshot.ref);
+      } catch (err) {
+        console.error('Error uploading owner image:', err);
+        throw new Error(`Image upload failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
     } else if (ownerImageFile && isMockEnabled) {
-      ownerImageUrl = await fileToBase64(ownerImageFile);
+      try {
+        ownerImageUrl = await fileToBase64(ownerImageFile);
+      } catch (err) {
+        throw new Error(`File conversion failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
     }
 
     const updated = { ...config, ownerImage: ownerImageUrl };
@@ -690,8 +767,13 @@ export const contentService = {
       return updated;
     }
 
-    const docRef = doc(db, 'site_content', 'about');
-    await setDoc(docRef, updated, { merge: true });
-    return updated;
+    try {
+      const docRef = doc(db, 'site_content', 'about');
+      await setDoc(docRef, updated, { merge: true });
+      return updated;
+    } catch (err) {
+      console.error('Firestore saveAboutConfig failed:', err);
+      throw err;
+    }
   }
 };

@@ -147,7 +147,7 @@ export default function TestimonialsPage() {
                 {/* Avatar / Big Icon */}
                 <div className="w-24 h-24 shrink-0 rounded-full bg-gradient-to-br from-saffron/10 to-accent/15 flex items-center justify-center text-4xl border border-saffron/20 shadow-md overflow-hidden">
                   {activeReview.avatar && activeReview.avatar.startsWith('http') ? (
-                    <img src={activeReview.avatar} alt={activeReview.name} className="w-full h-full object-cover" />
+                    <img src={activeReview.avatar} alt={`Kulhad Chai review by ${activeReview.name} - Sawariya Tea Stall Khatu Shyam Ji`} className="w-full h-full object-cover" />
                   ) : (
                     <span>{activeReview.avatar || '🧑'}</span>
                   )}
@@ -244,7 +244,7 @@ export default function TestimonialsPage() {
                   <div className="flex items-center gap-3 pt-4 border-t border-gray-50 mt-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-saffron/20 to-accent/20 flex items-center justify-center text-lg overflow-hidden shrink-0">
                       {t.avatar && t.avatar.startsWith('http') ? (
-                        <img src={t.avatar} alt={t.name} className="w-full h-full object-cover" />
+                        <img src={t.avatar} alt={`Best Kulhad Chai in Khatu review by ${t.name}`} className="w-full h-full object-cover" />
                       ) : (
                         <span>{t.avatar || '🧑'}</span>
                       )}

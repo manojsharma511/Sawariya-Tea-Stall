@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { contentService, GalleryItem } from '../../services/content.service';
+import { useRealTimeCollection } from '../../hooks/useRealTime';
 import { Plus, Trash2, Search, Image as ImageIcon, AlertCircle } from 'lucide-react';
 
 const CATEGORY_TABS = [
@@ -11,8 +12,7 @@ const CATEGORY_TABS = [
 ];
 
 export default function AdminGallery() {
-  const [gallery, setGallery] = useState<GalleryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: gallery, loading } = useRealTimeCollection<GalleryItem>('gallery', 'createdAt');
   const [activeTab, setActiveTab] = useState('all');
 
   // Form Field State
@@ -28,21 +28,6 @@ export default function AdminGallery() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const fetchGallery = async () => {
-    try {
-      setLoading(true);
-      const data = await contentService.getGallery();
-      setGallery(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchGallery();
-  }, []);
 
   const openAddModal = () => {
     setCaption('');
@@ -71,11 +56,11 @@ export default function AdminGallery() {
       };
 
       await contentService.addGalleryItem(payload, imageFile);
-      await fetchGallery();
+      // Real-time listener auto-updates the gallery
       setIsOpen(false);
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(err.message || 'Failed to add gallery item.');
+      setErrorMessage(`Failed to add gallery item: ${err.message || err}`);
     } finally {
       setSubmitting(false);
     }
@@ -84,11 +69,11 @@ export default function AdminGallery() {
   const handleDelete = async (id: string) => {
     try {
       await contentService.deleteGalleryItem(id);
-      setGallery(prev => prev.filter(g => g.id !== id));
+      // Real-time listener auto-removes the deleted item
       setDeleteConfirmId(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to delete image.');
+      setErrorMessage(`Failed to delete image: ${err.message || err}`);
     }
   };
 

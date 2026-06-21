@@ -4,17 +4,24 @@ import { db, isMockEnabled } from '../services/firebase';
 
 /**
  * Maps database/placeholder image URLs dynamically to valid local files.
- * This guarantees that even if the database has broken paths, the UI shows real images.
+ * Returns a NEW object — never mutates the input.
+ * Safe to call on any document type (MenuItem, PriceDoc, GalleryItem, etc.).
  */
-export function sanitizeImagePaths(item: any): any {
-  if (!item) return item;
+export function sanitizeImagePaths<T>(item: T): T {
+  if (!item || typeof item !== 'object') return item;
 
-  const fixPath = (src: string): string => {
+  const obj = item as Record<string, any>;
+
+  // Skip objects that have no image-related fields (e.g. PriceDoc)
+  const hasImageField = obj.image || obj.src || obj.bgImage || obj.ownerImage;
+  if (!hasImageField) return item;
+
+  const fixPath = (src: string, itemName?: string): string => {
     if (!src || typeof src !== 'string') return src;
 
     // 1. Fix menu items with missing /images/ai-generated/ folder
     if (src.includes('/images/ai-generated/')) {
-      const name = (item.name || '').toLowerCase();
+      const name = (itemName || '').toLowerCase();
       if (name.includes('masala') || name.includes('chai')) return '/images/masala-chai.jpg';
       if (name.includes('elaichi')) return '/images/elaichi-tea.jpg';
       if (name.includes('kulhad') || name.includes('tandoori')) return '/images/kulhad-tea.jpg';
@@ -66,21 +73,24 @@ export function sanitizeImagePaths(item: any): any {
     return src;
   };
 
-  // Clean values on the object
-  if (item.image) {
-    item.image = fixPath(item.image);
+  // Build a new object with sanitized paths — never mutate input
+  const itemName = typeof obj.name === 'string' ? obj.name : '';
+  const result = { ...obj } as Record<string, any>;
+
+  if (result.image) {
+    result.image = fixPath(result.image, itemName);
   }
-  if (item.src) {
-    item.src = fixPath(item.src);
+  if (result.src) {
+    result.src = fixPath(result.src, itemName);
   }
-  if (item.bgImage) {
-    item.bgImage = fixPath(item.bgImage);
+  if (result.bgImage) {
+    result.bgImage = fixPath(result.bgImage, itemName);
   }
-  if (item.ownerImage) {
-    item.ownerImage = fixPath(item.ownerImage);
+  if (result.ownerImage) {
+    result.ownerImage = fixPath(result.ownerImage, itemName);
   }
 
-  return item;
+  return result as T;
 }
 
 /**

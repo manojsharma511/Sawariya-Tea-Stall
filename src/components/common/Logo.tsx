@@ -14,6 +14,8 @@ export default function Logo({ size = 40, showText = true, className = '' }: Log
         height={size} 
         viewBox="0 0 200 200" 
         className="shrink-0 transition-transform duration-300 hover:rotate-3"
+        role="img"
+        aria-label="Sawariya Tea Stall Logo - Best Kulhad Chai in Khatu Shyam Ji"
       >
         <defs>
           <linearGradient id="steamGrad" x1="0%" y1="100%" x2="100%" y2="0%">

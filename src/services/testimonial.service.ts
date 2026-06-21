@@ -162,8 +162,13 @@ export const testimonialService = {
       return;
     }
 
-    const docRef = doc(db, 'testimonials', id);
-    await updateDoc(docRef, updates);
+    try {
+      const docRef = doc(db, 'testimonials', id);
+      await updateDoc(docRef, updates);
+    } catch (err) {
+      console.error('Firestore testimonial update failed:', err);
+      throw err;
+    }
   },
 
   /**
@@ -177,7 +182,12 @@ export const testimonialService = {
       return;
     }
 
-    const docRef = doc(db, 'testimonials', id);
-    await deleteDoc(docRef);
+    try {
+      const docRef = doc(db, 'testimonials', id);
+      await deleteDoc(docRef);
+    } catch (err) {
+      console.error('Firestore testimonial delete failed:', err);
+      throw err;
+    }
   }
 };

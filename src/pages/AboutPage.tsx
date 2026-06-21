@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Coffee, Users, Clock, Award, ShieldCheck, Star, Heart } from 'lucide-react';
 import SEO from '../components/common/SEO';
@@ -108,12 +107,12 @@ export default function AboutPage() {
       {/* --- Page Header --- */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
         <span className="inline-block px-4 py-1.5 bg-saffron/10 text-saffron rounded-full text-sm font-medium mb-4">
-          🏪 About Us
+          🏪 About Us - Best Tea Stall in Khatu Shyam Ji
         </span>
         <h1 className="font-heading text-4xl md:text-6xl font-bold text-secondary mb-4">
-          Our <span className="text-saffron">Story</span>
+          Famous <span className="text-saffron">Kulhad Chai Near Khatu Temple</span> - Our Story
         </h1>
-        <p className="font-hindi text-xl text-primary-dark mb-4">हमारी कहानी</p>
+        <p className="font-hindi text-xl text-primary-dark mb-4">खाटू श्याम जी में सबसे मशहूर कुलहद चाय की दुकान</p>
         <div className="flex items-center justify-center gap-3">
           <div className="h-[2px] w-12 bg-gradient-to-r from-transparent to-saffron" />
           <div className="w-2 h-2 rounded-full bg-saffron" />
@@ -130,7 +129,7 @@ export default function AboutPage() {
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
               <img
                 src={config.ownerImage}
-                alt="Sawariya Tea Stall Stall Photo"
+                alt="Famous Tea Stall in Khatu Shyam Ji - Mukesh Sharma at Sawariya Tea Stall near Toran Gate"
                 className="w-full h-[400px] md:h-[500px] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-transparent to-transparent" />
@@ -162,7 +161,7 @@ export default function AboutPage() {
           {/* Text Content */}
           <div>
             <h2 className="font-heading text-2xl md:text-3xl font-bold text-secondary mb-6 leading-tight">
-              A Tradition of <span className="text-saffron">Flavor</span> & <span className="text-saffron">Devotion</span>
+              Best Tea Stall in Khatu Shyam Ji - A Tradition of <span className="text-saffron">Flavor</span> & <span className="text-saffron">Devotion</span>
             </h2>
 
             <div className="space-y-4 mb-8 text-gray-600 leading-relaxed text-sm md:text-base whitespace-pre-line">

@@ -50,7 +50,8 @@ export default function AdminPrices() {
       });
     } catch (err) {
       console.error(err);
-      setErrorMessage('Failed to update price.');
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      setErrorMessage(`Failed to update price: ${errorMsg}`);
     } finally {
       setUpdatingId(null);
     }

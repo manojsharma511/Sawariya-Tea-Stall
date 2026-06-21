@@ -38,9 +38,9 @@ export default function AdminTestimonials() {
     try {
       await testimonialService.update(id, { status });
       setTestimonials(prev => prev.map(t => t.id === id ? { ...t, status } : t));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to update status.');
+      setErrorMessage(`Failed to update status: ${err.message || err}`);
     }
   };
 
@@ -49,9 +49,9 @@ export default function AdminTestimonials() {
       await testimonialService.delete(id);
       setTestimonials(prev => prev.filter(t => t.id !== id));
       setDeleteConfirmId(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to delete testimonial.');
+      setErrorMessage(`Failed to delete testimonial: ${err.message || err}`);
     }
   };
 
@@ -79,9 +79,9 @@ export default function AdminTestimonials() {
       await testimonialService.update(editingItem.id, updates);
       setTestimonials(prev => prev.map(t => t.id === editingItem.id ? { ...t, ...updates } : t));
       setEditingItem(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to save edits.');
+      setErrorMessage(`Failed to save edits: ${err.message || err}`);
     }
   };
 

@@ -62,19 +62,19 @@ export default function MenuPage() {
       {/* --- Page Header --- */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-10">
         <span className="inline-block px-4 py-1.5 bg-saffron/10 text-saffron rounded-full text-sm font-medium mb-4">
-          🍵 Our Menu
+          🍵 Best Chai & Snacks in Khatu Shyam Ji
         </span>
         <h1 className="font-heading text-4xl md:text-6xl font-bold text-secondary mb-4">
-          Taste Our <span className="text-saffron">Flavors</span>
+          Famous <span className="text-saffron">Kulhad Chai</span> & Snacks Menu
         </h1>
-        <p className="font-hindi text-xl text-primary-dark mb-4">हमारा मेन्यू</p>
+        <p className="font-hindi text-xl text-primary-dark mb-4">खाटू श्याम जी का सबसे बेहतरीन मेन्यू</p>
         <div className="flex items-center justify-center gap-3">
           <div className="h-[2px] w-12 bg-gradient-to-r from-transparent to-saffron" />
           <div className="w-2 h-2 rounded-full bg-saffron" />
           <div className="h-[2px] w-12 bg-gradient-to-l from-transparent to-saffron" />
         </div>
         <p className="text-gray-500 max-w-xl mx-auto mt-4 text-sm md:text-base">
-          From our signature spiced masala chai to traditional snacks, every item is freshly prepared to absolute perfection.
+          Best Kulhad Chai | Masala Chai | Special Tea | Snacks near Toran Gate Khatu Shyam Ji
         </p>
       </div>
 
@@ -145,13 +145,14 @@ export default function MenuPage() {
                 >
                   {/* Item Image & Badge overlay */}
                   <div className="relative h-48 overflow-hidden">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                    ) : (
+                     {item.image ? (
+                       <img
+                         src={item.image}
+                         alt={`Famous ${item.name} in Khatu Shyam Ji - Best Tea Stall near Toran Gate`}
+                         loading="lazy"
+                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                       />
+                     ) : (
                       <div className="w-full h-full bg-orange-50/50 flex items-center justify-center text-4xl">☕</div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />

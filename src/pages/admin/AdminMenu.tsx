@@ -1,11 +1,23 @@
-import { useState, useEffect } from 'react';
-import { contentService, MenuItem } from '../../services/content.service';
+import { useState, useMemo } from 'react';
+import { contentService, MenuItem, PriceDoc } from '../../services/content.service';
+import { useRealTimeCollection } from '../../hooks/useRealTime';
 import { CATEGORIES } from '../../utils/constants';
 import { Plus, Edit2, Trash2, Search, Flame, Star, AlertCircle } from 'lucide-react';
 
 export default function AdminMenu() {
-  const [menu, setMenu] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: rawItems, loading: loadingItems } = useRealTimeCollection<MenuItem>('menu_items');
+  const { data: rawPrices, loading: loadingPrices } = useRealTimeCollection<PriceDoc>('prices');
+
+  // Merge items with their prices
+  const menu = useMemo(() => {
+    return rawItems.map(item => {
+      const priceObj = rawPrices.find(p => p.id === item.id);
+      return { ...item, price: priceObj ? priceObj.price : 0 };
+    });
+  }, [rawItems, rawPrices]);
+
+  const loading = loadingItems || loadingPrices;
+
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   
@@ -28,21 +40,6 @@ export default function AdminMenu() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const fetchMenu = async () => {
-    try {
-      setLoading(true);
-      const data = await contentService.getMenu();
-      setMenu(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMenu();
-  }, []);
 
   const openAddModal = () => {
     setEditingItem(null);
@@ -86,7 +83,7 @@ export default function AdminMenu() {
         category,
         popular,
         new: isNew,
-        image: imageUrl 
+        image: imageUrl,
       };
 
       // saveMenuItem does not write price here unless added, content service handles merging
@@ -95,11 +92,11 @@ export default function AdminMenu() {
         imageFile || undefined
       );
 
-      await fetchMenu();
+      // Real-time listener auto-updates the list
       setIsOpen(false);
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(err.message || 'Failed to save menu item.');
+      setErrorMessage(`Failed to save menu item: ${err.message || err}`);
     } finally {
       setSubmitting(false);
     }
@@ -108,11 +105,11 @@ export default function AdminMenu() {
   const handleDelete = async (id: string) => {
     try {
       await contentService.deleteMenuItem(id);
-      setMenu(prev => prev.filter(m => m.id !== id));
+      // Real-time listener auto-removes the deleted item
       setDeleteConfirmId(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage('Failed to delete item.');
+      setErrorMessage(`Failed to delete item: ${err.message || err}`);
     }
   };
 

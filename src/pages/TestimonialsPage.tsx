@@ -6,7 +6,7 @@ import testimonialsData from '../data/testimonials.json';
 import { testimonialService, Testimonial } from '../services/testimonial.service';
 import { useAuth } from '../context/AuthContext';
 import { useRealTimeCollection } from '../hooks/useRealTime';
-import Loader from '../components/common/Loader';
+import { TestimonialsSkeleton } from '../components/common/Skeletons';
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -131,8 +131,14 @@ export default function TestimonialsPage() {
       </div>
 
       {loading ? (
-        <div className="py-20 flex justify-center">
-          <Loader />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <TestimonialsSkeleton />
+        </div>
+      ) : testimonials.length === 0 ? (
+        <div className="max-w-md mx-auto text-center py-16 px-4 bg-white rounded-3xl shadow-sm border border-gray-100 my-8">
+          <span className="text-5xl mb-4 block">💬</span>
+          <h3 className="font-heading text-xl font-bold text-secondary mb-1">No Reviews Yet</h3>
+          <p className="text-gray-400 text-xs mb-6">Be the first to write a review for Sawariya Tea Stall!</p>
         </div>
       ) : (
         <>
@@ -147,7 +153,15 @@ export default function TestimonialsPage() {
                 {/* Avatar / Big Icon */}
                 <div className="w-24 h-24 shrink-0 rounded-full bg-gradient-to-br from-saffron/10 to-accent/15 flex items-center justify-center text-4xl border border-saffron/20 shadow-md overflow-hidden">
                   {activeReview.avatar && activeReview.avatar.startsWith('http') ? (
-                    <img src={activeReview.avatar} alt={`Kulhad Chai review by ${activeReview.name} - Sawariya Tea Stall Khatu Shyam Ji`} className="w-full h-full object-cover" />
+                   <img
+                     src={activeReview.avatar}
+                     alt={`Kulhad Chai review by ${activeReview.name} - Sawariya Tea Stall Khatu Shyam Ji`}
+                     className="w-full h-full object-cover"
+                     onError={(e) => {
+                       e.currentTarget.onerror = null;
+                       e.currentTarget.src = 'https://api.dicebear.com/7.x/adventurer/svg?seed=Pilgrim';
+                     }}
+                   />
                   ) : (
                     <span>{activeReview.avatar || '🧑'}</span>
                   )}
@@ -244,7 +258,15 @@ export default function TestimonialsPage() {
                   <div className="flex items-center gap-3 pt-4 border-t border-gray-50 mt-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-saffron/20 to-accent/20 flex items-center justify-center text-lg overflow-hidden shrink-0">
                       {t.avatar && t.avatar.startsWith('http') ? (
-                        <img src={t.avatar} alt={`Best Kulhad Chai in Khatu review by ${t.name}`} className="w-full h-full object-cover" />
+                        <img
+                          src={t.avatar}
+                          alt={`Best Kulhad Chai in Khatu review by ${t.name}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = 'https://api.dicebear.com/7.x/adventurer/svg?seed=Pilgrim';
+                          }}
+                        />
                       ) : (
                         <span>{t.avatar || '🧑'}</span>
                       )}
@@ -299,7 +321,15 @@ export default function TestimonialsPage() {
                 <div className="flex items-center gap-4 p-4 bg-cream rounded-2xl border border-gray-100">
                   <div className="w-12 h-12 rounded-full overflow-hidden border border-saffron flex items-center justify-center bg-saffron/10 text-xl shrink-0">
                     {user.photoURL && user.photoURL.startsWith('http') ? (
-                      <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
+                      <img
+                        src={user.photoURL}
+                        alt={user.displayName || 'User'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'https://api.dicebear.com/7.x/adventurer/svg?seed=Pilgrim';
+                        }}
+                      />
                     ) : (
                       <span>{user.photoURL || '🧑'}</span>
                     )}

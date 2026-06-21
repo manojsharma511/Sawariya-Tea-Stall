@@ -238,12 +238,13 @@ export const contentService = {
       updatedAt: isMockEnabled ? new Date().toISOString() : Timestamp.now()
     };
 
-    const targetPrice = item.price !== undefined ? Number(item.price) : 0;
+    const targetPrice = item.price;
 
     if (isMockEnabled) {
       const items = getMockData<MenuItem[]>(KEYS.MENU_ITEMS, []);
       const prices = getMockData<PriceDoc[]>(KEYS.PRICES, []);
       let activeId = item.id || `menu_${Date.now()}`;
+      let finalPrice = targetPrice !== undefined ? Number(targetPrice) : 0;
 
       if (item.id) {
         // Edit Existing
@@ -251,22 +252,27 @@ export const contentService = {
         if (index > -1) {
           items[index] = { ...items[index], ...itemData } as MenuItem;
         }
-        const priceIdx = prices.findIndex(p => p.id === item.id);
-        if (priceIdx > -1) {
-          prices[priceIdx] = { id: item.id, price: targetPrice };
+        if (targetPrice !== undefined) {
+          const priceIdx = prices.findIndex(p => p.id === item.id);
+          if (priceIdx > -1) {
+            prices[priceIdx] = { id: item.id, price: finalPrice };
+          } else {
+            prices.push({ id: item.id, price: finalPrice });
+          }
         } else {
-          prices.push({ id: item.id, price: targetPrice });
+          const existingPrice = prices.find(p => p.id === item.id);
+          finalPrice = existingPrice ? existingPrice.price : 0;
         }
       } else {
         // Add New
         const newItem = { id: activeId, ...itemData, createdAt: new Date().toISOString() } as MenuItem;
         items.push(newItem);
-        prices.push({ id: activeId, price: targetPrice });
+        prices.push({ id: activeId, price: finalPrice });
       }
 
       saveMockData(KEYS.MENU_ITEMS, items);
       saveMockData(KEYS.PRICES, prices);
-      return { id: activeId, ...itemData, price: targetPrice } as MenuItem;
+      return { id: activeId, ...itemData, price: finalPrice } as MenuItem;
     }
 
     try {
@@ -275,17 +281,28 @@ export const contentService = {
         const docRef = doc(db, 'menu_items', item.id);
         await updateDoc(docRef, itemData);
 
-        // Update Price
-        await setDoc(doc(db, 'prices', item.id), { price: targetPrice }, { merge: true });
-        return { id: item.id, ...itemData, price: targetPrice } as MenuItem;
+        let finalPrice = 0;
+        if (targetPrice !== undefined) {
+          finalPrice = Number(targetPrice);
+          await setDoc(doc(db, 'prices', item.id), { price: finalPrice }, { merge: true });
+        } else {
+          // Fetch existing price to return correct merged MenuItem
+          const priceDocRef = doc(db, 'prices', item.id);
+          const priceSnap = await getDoc(priceDocRef);
+          if (priceSnap.exists()) {
+            finalPrice = priceSnap.data()?.price || 0;
+          }
+        }
+        return { id: item.id, ...itemData, price: finalPrice } as MenuItem;
       } else {
         // Add
+        const finalPrice = targetPrice !== undefined ? Number(targetPrice) : 0;
         const fullNewDoc = { ...itemData, createdAt: Timestamp.now() };
         const docRef = await addDoc(collection(db, 'menu_items'), fullNewDoc);
 
         // Write Price
-        await setDoc(doc(db, 'prices', docRef.id), { price: targetPrice });
-        return { id: docRef.id, ...fullNewDoc, price: targetPrice } as MenuItem;
+        await setDoc(doc(db, 'prices', docRef.id), { price: finalPrice });
+        return { id: docRef.id, ...fullNewDoc, price: finalPrice } as MenuItem;
       }
     } catch (err) {
       console.error('Firestore saveMenuItem failed:', err);

@@ -3,9 +3,10 @@ import { contentService, MenuItem, PriceDoc } from '../../services/content.servi
 import { useRealTimeCollection } from '../../hooks/useRealTime';
 import { CATEGORIES } from '../../utils/constants';
 import { Plus, Edit2, Trash2, Search, Flame, Star, AlertCircle } from 'lucide-react';
+import { AdminSkeleton } from '../../components/common/Skeletons';
 
 export default function AdminMenu() {
-  const { data: rawItems, loading: loadingItems } = useRealTimeCollection<MenuItem>('menu_items');
+  const { data: rawItems, loading: loadingItems, setData: setRawItems } = useRealTimeCollection<MenuItem>('menu_items');
   const { data: rawPrices, loading: loadingPrices } = useRealTimeCollection<PriceDoc>('prices');
 
   // Merge items with their prices
@@ -75,27 +76,34 @@ export default function AdminMenu() {
     }
 
     setSubmitting(true);
-    try {
-      const payload = {
-        name,
-        nameHi,
-        description,
-        category,
-        popular,
-        new: isNew,
-        image: imageUrl,
-      };
+    const payload = {
+      name,
+      nameHi,
+      description,
+      category,
+      popular,
+      new: isNew,
+      image: imageUrl,
+    };
 
-      // saveMenuItem does not write price here unless added, content service handles merging
+    const prevItems = [...rawItems];
+    if (editingItem && setRawItems) {
+      setRawItems(rawItems.map(item => 
+        item.id === editingItem.id ? { ...item, ...payload } : item
+      ));
+    }
+    setIsOpen(false);
+
+    try {
       await contentService.saveMenuItem(
         editingItem ? { ...payload, id: editingItem.id } : payload,
         imageFile || undefined
       );
-
-      // Real-time listener auto-updates the list
-      setIsOpen(false);
     } catch (err: any) {
-      console.error(err);
+      console.error('Error saving menu item:', err);
+      if (editingItem && setRawItems) {
+        setRawItems(prevItems);
+      }
       setErrorMessage(`Failed to save menu item: ${err.message || err}`);
     } finally {
       setSubmitting(false);
@@ -103,12 +111,18 @@ export default function AdminMenu() {
   };
 
   const handleDelete = async (id: string) => {
+    const prevItems = [...rawItems];
+    if (setRawItems) {
+      setRawItems(rawItems.filter(item => item.id !== id));
+    }
+    setDeleteConfirmId(null);
     try {
       await contentService.deleteMenuItem(id);
-      // Real-time listener auto-removes the deleted item
-      setDeleteConfirmId(null);
     } catch (err: any) {
-      console.error(err);
+      console.error('Error deleting menu item:', err);
+      if (setRawItems) {
+        setRawItems(prevItems);
+      }
       setErrorMessage(`Failed to delete item: ${err.message || err}`);
     }
   };
@@ -125,11 +139,7 @@ export default function AdminMenu() {
   });
 
   if (loading) {
-    return (
-      <div className="py-12 text-center text-gray-500">
-        <p className="animate-pulse">Loading menu items...</p>
-      </div>
-    );
+    return <AdminSkeleton />;
   }
 
   return (
@@ -185,7 +195,15 @@ export default function AdminMenu() {
               <div>
                 <div className="relative h-40 bg-gray-50 overflow-hidden border-b border-gray-50">
                   {item.image ? (
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/images/masala-chai.jpg';
+                      }}
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-4xl bg-orange-50 text-saffron">☕</div>
                   )}
@@ -305,7 +323,15 @@ export default function AdminMenu() {
                 <div className="flex flex-col gap-2">
                   {imageUrl && (
                     <div className="w-20 h-20 rounded-xl overflow-hidden border border-gray-150 relative">
-                      <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                      <img
+                        src={imageUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/images/masala-chai.jpg';
+                        }}
+                      />
                     </div>
                   )}
                   <div className="space-y-1">

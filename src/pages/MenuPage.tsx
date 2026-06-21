@@ -5,7 +5,7 @@ import SEO from '../components/common/SEO';
 import { CATEGORIES } from '../utils/constants';
 import { useRealTimeCollection } from '../hooks/useRealTime';
 import { MenuItem, PriceDoc } from '../services/content.service';
-import Loader from '../components/common/Loader';
+import { MenuSkeleton } from '../components/common/Skeletons';
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -118,9 +118,7 @@ export default function MenuPage() {
       {/* --- Menu Grid Display --- */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {loading ? (
-          <div className="py-20 flex justify-center">
-            <Loader />
-          </div>
+          <MenuSkeleton />
         ) : filteredItems.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
             <span className="text-5xl mb-4 block">🔍</span>
@@ -151,6 +149,10 @@ export default function MenuPage() {
                          alt={`Famous ${item.name} in Khatu Shyam Ji - Best Tea Stall near Toran Gate`}
                          loading="lazy"
                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                         onError={(e) => {
+                           e.currentTarget.onerror = null;
+                           e.currentTarget.src = '/images/masala-chai.jpg';
+                         }}
                        />
                      ) : (
                       <div className="w-full h-full bg-orange-50/50 flex items-center justify-center text-4xl">☕</div>

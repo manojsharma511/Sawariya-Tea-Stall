@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { testimonialService, Testimonial } from '../../services/testimonial.service';
 import { Star, Check, X, Edit2, Trash2, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { AdminSkeleton } from '../../components/common/Skeletons';
 
 export default function AdminTestimonials() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -35,22 +36,26 @@ export default function AdminTestimonials() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleStatusChange = async (id: string, status: 'approved' | 'rejected') => {
+    const prevTestimonials = [...testimonials];
+    setTestimonials(prev => prev.map(t => t.id === id ? { ...t, status } : t));
     try {
       await testimonialService.update(id, { status });
-      setTestimonials(prev => prev.map(t => t.id === id ? { ...t, status } : t));
     } catch (err: any) {
-      console.error(err);
+      console.error('Error updating status:', err);
+      setTestimonials(prevTestimonials);
       setErrorMessage(`Failed to update status: ${err.message || err}`);
     }
   };
 
   const handleDelete = async (id: string) => {
+    const prevTestimonials = [...testimonials];
+    setTestimonials(prev => prev.filter(t => t.id !== id));
+    setDeleteConfirmId(null);
     try {
       await testimonialService.delete(id);
-      setTestimonials(prev => prev.filter(t => t.id !== id));
-      setDeleteConfirmId(null);
     } catch (err: any) {
-      console.error(err);
+      console.error('Error deleting testimonial:', err);
+      setTestimonials(prevTestimonials);
       setErrorMessage(`Failed to delete testimonial: ${err.message || err}`);
     }
   };
@@ -68,19 +73,22 @@ export default function AdminTestimonials() {
     e.preventDefault();
     if (!editingItem) return;
 
+    const prevTestimonials = [...testimonials];
+    const updates = {
+      name: editName,
+      location: editLocation,
+      review: editReview,
+      reviewHi: editReviewHi,
+      rating: editRating
+    };
+    setTestimonials(prev => prev.map(t => t.id === editingItem.id ? { ...t, ...updates } : t));
+    setEditingItem(null);
+
     try {
-      const updates = {
-        name: editName,
-        location: editLocation,
-        review: editReview,
-        reviewHi: editReviewHi,
-        rating: editRating
-      };
       await testimonialService.update(editingItem.id, updates);
-      setTestimonials(prev => prev.map(t => t.id === editingItem.id ? { ...t, ...updates } : t));
-      setEditingItem(null);
     } catch (err: any) {
-      console.error(err);
+      console.error('Error editing testimonial:', err);
+      setTestimonials(prevTestimonials);
       setErrorMessage(`Failed to save edits: ${err.message || err}`);
     }
   };
@@ -98,11 +106,7 @@ export default function AdminTestimonials() {
   };
 
   if (loading) {
-    return (
-      <div className="py-12 text-center text-gray-500">
-        <p className="animate-pulse">Loading testimonials...</p>
-      </div>
-    );
+    return <AdminSkeleton />;
   }
 
   return (
@@ -153,7 +157,15 @@ export default function AdminTestimonials() {
               <div className="flex items-start gap-4 flex-grow max-w-3xl">
                 <div className="w-12 h-12 rounded-full overflow-hidden border border-saffron/20 bg-saffron/5 flex items-center justify-center text-xl shrink-0">
                   {item.avatar && item.avatar.startsWith('http') ? (
-                    <img src={item.avatar} alt={item.name} className="w-full h-full object-cover" />
+                    <img
+                      src={item.avatar}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = 'https://api.dicebear.com/7.x/adventurer/svg?seed=Pilgrim';
+                      }}
+                    />
                   ) : (
                     <span>{item.avatar || '🧑'}</span>
                   )}

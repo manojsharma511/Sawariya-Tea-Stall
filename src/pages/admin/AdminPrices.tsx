@@ -2,10 +2,11 @@ import { useState, useMemo } from 'react';
 import { contentService, MenuItem, PriceDoc } from '../../services/content.service';
 import { useRealTimeCollection } from '../../hooks/useRealTime';
 import { DollarSign, Save, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
+import { AdminSkeleton } from '../../components/common/Skeletons';
 
 export default function AdminPrices() {
   const { data: rawItems, loading: loadingItems } = useRealTimeCollection<MenuItem>('menu_items');
-  const { data: rawPrices, loading: loadingPrices } = useRealTimeCollection<PriceDoc>('prices');
+  const { data: rawPrices, loading: loadingPrices, setData: setRawPrices } = useRealTimeCollection<PriceDoc>('prices');
   
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [tempPrices, setTempPrices] = useState<Record<string, string>>({});
@@ -35,6 +36,15 @@ export default function AdminPrices() {
     }
 
     setUpdatingId(itemId);
+    const prevPrices = [...rawPrices];
+    
+    // Optimistic Update
+    if (setRawPrices) {
+      setRawPrices(rawPrices.map(p => 
+        p.id === itemId ? { ...p, price: newPrice } : p
+      ));
+    }
+    
     try {
       await contentService.updateItemPrice(itemId, newPrice);
       
@@ -49,7 +59,8 @@ export default function AdminPrices() {
         return copy;
       });
     } catch (err) {
-      console.error(err);
+      console.error('Error saving price:', err);
+      if (setRawPrices) setRawPrices(prevPrices);
       const errorMsg = err instanceof Error ? err.message : String(err);
       setErrorMessage(`Failed to update price: ${errorMsg}`);
     } finally {
@@ -61,11 +72,7 @@ export default function AdminPrices() {
   const loading = loadingItems || loadingPrices;
 
   if (loading) {
-    return (
-      <div className="py-12 text-center text-gray-500">
-        <p className="animate-pulse">Loading items and prices...</p>
-      </div>
-    );
+    return <AdminSkeleton />;
   }
 
   return (
@@ -100,7 +107,15 @@ export default function AdminPrices() {
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-50 shrink-0 border border-gray-100 flex items-center justify-center">
                         {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/images/masala-chai.jpg';
+                            }}
+                          />
                         ) : (
                           <span className="text-xl">☕</span>
                         )}

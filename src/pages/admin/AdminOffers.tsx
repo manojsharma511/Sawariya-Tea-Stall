@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { contentService, OfferItem } from '../../services/content.service';
 import { useRealTimeCollection } from '../../hooks/useRealTime';
 import { Plus, Edit2, Trash2, Tag, Sparkles, Calendar, ToggleLeft, ToggleRight, Check, AlertCircle } from 'lucide-react';
+import { AdminSkeleton } from '../../components/common/Skeletons';
 
 export default function AdminOffers() {
-  const { data: offers, loading } = useRealTimeCollection<OfferItem>('offers');
+  const { data: offers, loading, setData: setOffers } = useRealTimeCollection<OfferItem>('offers');
   
   // Modal State
   const [isOpen, setIsOpen] = useState(false);
@@ -62,26 +63,35 @@ export default function AdminOffers() {
     }
 
     setSubmitting(true);
-    try {
-      const payload = {
-        type,
-        title,
-        titleHi,
-        description,
-        descriptionHi,
-        discount,
-        validity,
-        badge,
-        active
-      };
+    const payload = {
+      type,
+      title,
+      titleHi,
+      description,
+      descriptionHi,
+      discount,
+      validity,
+      badge,
+      active
+    };
 
+    const prevOffers = [...offers];
+    if (editingItem && setOffers) {
+      setOffers(offers.map(o => 
+        o.id === editingItem.id ? { ...o, ...payload } : o
+      ));
+    }
+    setIsOpen(false);
+
+    try {
       await contentService.saveOffer(
         editingItem ? { ...payload, id: editingItem.id } : payload
       );
-
-      setIsOpen(false);
     } catch (err: any) {
-      console.error(err);
+      console.error('Error saving offer:', err);
+      if (editingItem && setOffers) {
+        setOffers(prevOffers);
+      }
       setErrorMessage(`Failed to save offer: ${err.message || err}`);
     } finally {
       setSubmitting(false);
@@ -89,34 +99,44 @@ export default function AdminOffers() {
   };
 
   const handleToggleActive = async (item: OfferItem) => {
+    const prevOffers = [...offers];
+    if (setOffers) {
+      setOffers(offers.map(o => o.id === item.id ? { ...o, active: !o.active } : o));
+    }
     try {
       await contentService.saveOffer({
         ...item,
         active: !item.active
       });
     } catch (err: any) {
-      console.error(err);
+      console.error('Error toggling offer:', err);
+      if (setOffers) {
+        setOffers(prevOffers);
+      }
       setErrorMessage(`Failed to toggle status: ${err.message || err}`);
     }
   };
 
   const handleDelete = async (id: string) => {
+    const prevOffers = [...offers];
+    if (setOffers) {
+      setOffers(offers.filter(o => o.id !== id));
+    }
+    setDeleteConfirmId(null);
     try {
       await contentService.deleteOffer(id);
-      setDeleteConfirmId(null);
     } catch (err: any) {
-      console.error(err);
+      console.error('Error deleting offer:', err);
+      if (setOffers) {
+        setOffers(prevOffers);
+      }
       setErrorMessage(`Failed to delete offer: ${err.message || err}`);
     }
   };
 
 
   if (loading) {
-    return (
-      <div className="py-12 text-center text-gray-500">
-        <p className="animate-pulse">Loading offers...</p>
-      </div>
-    );
+    return <AdminSkeleton />;
   }
 
   return (

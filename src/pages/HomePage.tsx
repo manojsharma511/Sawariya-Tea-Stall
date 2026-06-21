@@ -9,7 +9,7 @@ import { useRealTimeCollection, useRealTimeDocument } from '../hooks/useRealTime
 import { HeroConfig, ContactConfig, MenuItem, PriceDoc } from '../services/content.service';
 import { Testimonial } from '../services/testimonial.service';
 import testimonialsData from '../data/testimonials.json';
-import Loader from '../components/common/Loader';
+import { HomeSkeleton } from '../components/common/Skeletons';
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -88,8 +88,8 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <Loader />
+      <div className="min-h-screen bg-cream pt-24 pb-20">
+        <HomeSkeleton />
       </div>
     );
   }
@@ -142,6 +142,10 @@ export default function HomePage() {
             src={hero.bgImage}
             alt="Best Tea Stall in Khatu Shyam Ji near Toran Gate"
             className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/sawariya-photos/cb5dc902-122f-49a9-a4f6-d03afe90cb10.png';
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/80" />
           <div className="absolute inset-0 bg-gradient-to-r from-secondary/40 to-transparent" />
@@ -294,6 +298,10 @@ export default function HomePage() {
                          alt={`Best Kulhad Chai in Khatu - ${item.name} at Sawariya Tea Stall`}
                          loading="lazy"
                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                         onError={(e) => {
+                           e.currentTarget.onerror = null;
+                           e.currentTarget.src = '/images/masala-chai.jpg';
+                         }}
                        />
                      ) : (
                       <div className="w-full h-full bg-orange-50/50 flex items-center justify-center text-4xl">☕</div>
@@ -415,7 +423,15 @@ export default function HomePage() {
                   <div className="flex items-center gap-3 pt-4 border-t border-gray-50">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-saffron/20 to-accent/20 flex items-center justify-center text-lg overflow-hidden shrink-0">
                       {t.avatar && t.avatar.startsWith('http') ? (
-                        <img src={t.avatar} alt={`Best Kulhad Chai review by ${t.name}, Khatu Shyam Ji`} className="w-full h-full object-cover" />
+                        <img
+                          src={t.avatar}
+                          alt={`Best Kulhad Chai review by ${t.name}, Khatu Shyam Ji`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = 'https://api.dicebear.com/7.x/adventurer/svg?seed=Pilgrim';
+                          }}
+                        />
                       ) : (
                         <span>{t.avatar || '🧑'}</span>
                       )}

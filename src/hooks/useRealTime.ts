@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { collection, doc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db, isMockEnabled } from '../services/firebase';
 
+import defaultMenu from '../data/menu.json';
+import defaultGallery from '../data/gallery.json';
+import defaultOffers from '../data/offers.json';
+import initialTestimonials from '../data/testimonials.json';
+
 /**
  * Maps database/placeholder image URLs dynamically to valid local files.
  * Returns a NEW object — never mutates the input.
@@ -94,8 +99,118 @@ export function sanitizeImagePaths<T>(item: T): T {
 }
 
 /**
+ * Returns static fallback array for any collection name.
+ */
+function getLocalFallbackForCollection(collectionName: string): any[] {
+  switch (collectionName) {
+    case 'menu_items':
+      return defaultMenu.map((m, idx) => {
+        const { price, ...rest } = m;
+        return { ...rest, id: `menu_${idx}` };
+      });
+    case 'prices':
+      return defaultMenu.map((m, idx) => ({
+        id: `menu_${idx}`,
+        price: m.price
+      }));
+    case 'gallery':
+      return defaultGallery.map((g, idx) => ({
+        ...g,
+        id: `gallery_${idx}`
+      }));
+    case 'offers':
+      return defaultOffers.map((o, idx) => ({
+        ...o,
+        id: o.id || `offer_${idx}`,
+        active: true
+      }));
+    case 'testimonials':
+      return initialTestimonials.map((t, idx) => ({
+        ...t,
+        id: `static_${idx}`,
+        status: 'approved',
+        createdAt: new Date(Date.now() - idx * 24 * 60 * 60 * 1000).toISOString()
+      }));
+    default:
+      return [];
+  }
+}
+
+/**
+ * Returns static fallback object for single document paths.
+ */
+function getLocalFallbackForDocument(collectionName: string, documentId: string): any {
+  if (collectionName === 'site_content') {
+    if (documentId === 'hero') {
+      return {
+        blessing: '🙏 श्री खाटू श्याम जी की जय 🙏',
+        shopName: 'Sawariya Tea Stall',
+        shopNameHi: 'साँवरिया टी स्टॉल',
+        subtitle: 'Serving the finest spiced tea and warm snacks to devotees at Khatu Shyam Ji',
+        subtitleHi: 'खाटू श्याम जी आओ, साँवरिया की स्पेशल चाय का मज़ा लो',
+        bgImage: '/sawariya-photos/cb5dc902-122f-49a9-a4f6-d03afe90cb10.png'
+      };
+    }
+    if (documentId === 'contact') {
+      return {
+        phone: '7340030949',
+        whatsapp: '917340030949',
+        email: 'mukeshsharma.khatu@gmail.com',
+        address: 'Near Toran Gate, Khatu Shyam Ji, Rajasthan, India',
+        addressHi: 'तोरण गेट के पास, खाटू श्याम जी, सीकर, राजस्थान',
+        workingHours: {
+          daily: '6:00 AM - 10:00 PM',
+          dailyHi: 'सुबह 6 बजे से रात 10 बजे तक',
+          festivals: 'Extended Hours',
+          festivalsHi: 'त्योहारों के दिनों में अतिरिक्त समय तक खुली',
+          ekadashi: 'Open Early',
+          ekadashiHi: 'श्याम एकादशी पर जल्दी खुलती है'
+        }
+      };
+    }
+    if (documentId === 'about') {
+      return {
+        story: 'Welcome to Sawariya Tea Stall, located at the heart of the holy town of Khatu Shyam Ji, right near the iconic Toran Gate. We have been serving the most refreshing and flavorful spiced tea to thousands of devotees and visitors who come to seek blessings at the revered Khatu Shyam Ji Temple.\n\nRun by Mukesh Kumar, our tea stall is more than just a place for chai — it\'s a warm sanctuary where pilgrims rest after long journeys, seek refreshments, and leave feeling revitalized. Every single cup is brewed with pure dedication, using fresh premium Assam leaves, fresh milk, and hand-ground ginger, cardamom, and spices.',
+        storyHi: 'साँवरिया टी स्टॉल में स्वागत है। हम खाटू श्याम जी के तोरण गेट के पास स्थित हैं। बाबा श्याम के दर्शन के बाद हमारी कुल्हड़ चाय का स्वाद आपके सफर को हमेशा के लिए यादगार बना देगा। मनोज जी द्वारा संचालित यह दुकान केवल चाय की दुकान नहीं, बल्कि भक्तों की थकान मिटाने और आराम करने की जगह है। 🙏',
+        ownerName: 'Mukesh Sharma',
+        ownerNameHi: 'मुकेश शर्मा',
+        ownerTitle: 'Owner & Tea Master',
+        ownerImage: '/sawariya-photos/a251a44f-d0aa-4c88-894c-b0ccf80c16ad.png',
+        stats: [
+          { icon: 'Coffee', value: '1000+', label: 'Cups Daily', labelHi: 'कप प्रतिदिन' },
+          { icon: 'Users', value: '10K+', label: 'Happy Customers', labelHi: 'खुश ग्राहक' },
+          { icon: 'Clock', value: '6AM - 10PM', label: 'Open Hours', labelHi: 'खुलने का समय' },
+          { icon: 'Award', value: 'Premium', label: 'Near Toran Gate', labelHi: 'तोरण गेट पर' }
+        ],
+        coreValues: [
+          {
+            icon: 'ShieldCheck',
+            title: 'Uncompromised Purity',
+            titleHi: 'शुद्धता की गारंटी',
+            description: 'We use premium Assam tea leaves, fresh thick milk, and pure spices. We never use artificial flavors or colors.'
+          },
+          {
+            icon: 'Star',
+            title: 'Consistency of Taste',
+            titleHi: 'स्वाद में निरंतरता',
+            description: 'Every cup is prepared with exact measurements of spices, ginger, and cardamom, ensuring the same rich taste every single day.'
+          },
+          {
+            icon: 'Heart',
+            title: 'Service with Devotion',
+            titleHi: 'सेवा भाव',
+            description: 'As we serve devotees visiting Khatu Shyam Ji, we treat our service as an offering to Shyam Baba, welcoming everyone with warmth.'
+          }
+        ]
+      };
+    }
+  }
+  return null;
+}
+
+/**
  * Custom hook to listen to a Firestore collection in real-time.
- * Falls back to LocalStorage in Mock Mode, listening for custom DB update events.
+ * Falls back to LocalStorage in Mock Mode or static defaults if offline/uninitialized.
  */
 export function useRealTimeCollection<T>(
   collectionName: string, 
@@ -145,6 +260,9 @@ export function useRealTimeCollection<T>(
     }
 
     if (!db) {
+      console.warn(`Firestore not initialized. Loading local fallback for collection: ${collectionName}`);
+      const fallback = getLocalFallbackForCollection(collectionName);
+      setData(fallback.map(x => sanitizeImagePaths(x)));
       setLoading(false);
       return;
     }
@@ -160,19 +278,21 @@ export function useRealTimeCollection<T>(
       setData(list);
       setLoading(false);
     }, (error) => {
-      console.error(`Error in onSnapshot for collection ${collectionName}:`, error);
+      console.error(`Error in onSnapshot for collection ${collectionName}, loading local fallback:`, error);
+      const fallback = getLocalFallbackForCollection(collectionName);
+      setData(fallback.map(x => sanitizeImagePaths(x)));
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, [collectionName, orderByField]);
 
-  return { data, loading };
+  return { data, loading, setData };
 }
 
 /**
  * Custom hook to listen to a single Firestore document in real-time.
- * Falls back to LocalStorage in Mock Mode, listening for custom DB update events.
+ * Falls back to LocalStorage or static defaults if offline/uninitialized.
  */
 export function useRealTimeDocument<T>(
   collectionName: string, 
@@ -217,6 +337,9 @@ export function useRealTimeDocument<T>(
     }
 
     if (!db) {
+      console.warn(`Firestore not initialized. Loading local fallback for document: ${collectionName}/${documentId}`);
+      const fallback = getLocalFallbackForDocument(collectionName, documentId) || defaultValue;
+      setData(sanitizeImagePaths(fallback));
       setLoading(false);
       return;
     }
@@ -227,18 +350,21 @@ export function useRealTimeDocument<T>(
       if (snapshot.exists()) {
         setData(sanitizeImagePaths(snapshot.data()) as T);
       } else {
-        setData(defaultValue);
+        const fallback = getLocalFallbackForDocument(collectionName, documentId) || defaultValue;
+        setData(sanitizeImagePaths(fallback));
       }
       setLoading(false);
     }, (error) => {
-      console.error(`Error in onSnapshot for document ${collectionName}/${documentId}:`, error);
+      console.error(`Error in onSnapshot for document ${collectionName}/${documentId}, loading local fallback:`, error);
+      const fallback = getLocalFallbackForDocument(collectionName, documentId) || defaultValue;
+      setData(sanitizeImagePaths(fallback));
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, [collectionName, documentId]);
 
-  return { data, loading };
+  return { data, loading, setData };
 }
 
 /**

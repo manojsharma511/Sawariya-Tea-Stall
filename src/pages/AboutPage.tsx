@@ -4,7 +4,7 @@ import SEO from '../components/common/SEO';
 import { useRealTimeDocument } from '../hooks/useRealTime';
 import { AboutConfig, ContactConfig } from '../services/content.service';
 import { useCall } from '../hooks/useCall';
-import Loader from '../components/common/Loader';
+import { HomeSkeleton } from '../components/common/Skeletons';
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -88,8 +88,8 @@ export default function AboutPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <Loader />
+      <div className="min-h-screen bg-cream pt-24 pb-20">
+        <HomeSkeleton />
       </div>
     );
   }
@@ -131,6 +131,10 @@ export default function AboutPage() {
                 src={config.ownerImage}
                 alt="Famous Tea Stall in Khatu Shyam Ji - Mukesh Sharma at Sawariya Tea Stall near Toran Gate"
                 className="w-full h-[400px] md:h-[500px] object-cover"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/sawariya-photos/a251a44f-d0aa-4c88-894c-b0ccf80c16ad.png';
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-transparent to-transparent" />
 

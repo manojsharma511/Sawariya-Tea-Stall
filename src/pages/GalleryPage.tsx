@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SEO from '../components/common/SEO';
 import { useRealTimeCollection } from '../hooks/useRealTime';
 import { GalleryItem } from '../services/content.service';
-import Loader from '../components/common/Loader';
+import { GallerySkeleton } from '../components/common/Skeletons';
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -33,8 +33,19 @@ export default function GalleryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <Loader />
+      <div className="min-h-screen bg-cream pt-24 md:pt-32 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-10">
+          <span className="inline-block px-4 py-1.5 bg-saffron/10 text-saffron rounded-full text-sm font-medium mb-4">
+            📸 Gallery
+          </span>
+          <h1 className="font-heading text-4xl md:text-6xl font-bold text-secondary mb-4">
+            Chai <span className="text-saffron">Moments</span>
+          </h1>
+          <p className="font-hindi text-xl text-primary-dark mb-4">फोटो गैलरी</p>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <GallerySkeleton />
+        </div>
       </div>
     );
   }
@@ -114,6 +125,10 @@ export default function GalleryPage() {
                       alt={img.alt}
                       loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-115 transition-transform duration-700"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/images/hero-bg.jpg';
+                      }}
                     />
                   </div>
 

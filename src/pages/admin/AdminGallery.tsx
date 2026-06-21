@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { contentService, GalleryItem } from '../../services/content.service';
 import { useRealTimeCollection } from '../../hooks/useRealTime';
 import { Plus, Trash2, Search, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { AdminSkeleton } from '../../components/common/Skeletons';
 
 const CATEGORY_TABS = [
   { id: 'all', name: 'All Photos' },
@@ -12,7 +13,7 @@ const CATEGORY_TABS = [
 ];
 
 export default function AdminGallery() {
-  const { data: gallery, loading } = useRealTimeCollection<GalleryItem>('gallery', 'createdAt');
+  const { data: gallery, loading, setData: setGallery } = useRealTimeCollection<GalleryItem>('gallery', 'createdAt');
   const [activeTab, setActiveTab] = useState('all');
 
   // Form Field State
@@ -67,12 +68,18 @@ export default function AdminGallery() {
   };
 
   const handleDelete = async (id: string) => {
+    const prevGallery = [...gallery];
+    if (setGallery) {
+      setGallery(gallery.filter(g => g.id !== id));
+    }
+    setDeleteConfirmId(null);
     try {
       await contentService.deleteGalleryItem(id);
-      // Real-time listener auto-removes the deleted item
-      setDeleteConfirmId(null);
     } catch (err: any) {
-      console.error(err);
+      console.error('Error deleting gallery item:', err);
+      if (setGallery) {
+        setGallery(prevGallery);
+      }
       setErrorMessage(`Failed to delete image: ${err.message || err}`);
     }
   };
@@ -80,11 +87,7 @@ export default function AdminGallery() {
   const filtered = gallery.filter(item => activeTab === 'all' || item.category === activeTab);
 
   if (loading) {
-    return (
-      <div className="py-12 text-center text-gray-500">
-        <p className="animate-pulse">Loading gallery images...</p>
-      </div>
-    );
+    return <AdminSkeleton />;
   }
 
   return (
@@ -130,7 +133,15 @@ export default function AdminGallery() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filtered.map(img => (
             <div key={img.id} className="group bg-white rounded-3xl overflow-hidden border border-gray-100 relative aspect-square shadow-sm hover:shadow-md transition-all duration-300">
-              <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/images/hero-bg.jpg';
+                }}
+              />
               
               {/* Overlay on hover */}
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4 text-white">
@@ -222,7 +233,15 @@ export default function AdminGallery() {
                 <div className="flex flex-col gap-2">
                   {imageUrl && (
                     <div className="w-24 h-24 rounded-xl overflow-hidden border border-gray-150 relative">
-                      <img src={imageUrl} alt="Upload preview" className="w-full h-full object-cover" />
+                      <img
+                        src={imageUrl}
+                        alt="Upload preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/images/hero-bg.jpg';
+                        }}
+                      />
                     </div>
                   )}
                   <input

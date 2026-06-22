@@ -164,14 +164,14 @@ export const contentService = {
       const snapshot = await getDocs(collection(db, 'menu_items'));
       const items: MenuItem[] = [];
       snapshot.forEach(doc => {
-        items.push({ id: doc.id, ...doc.data() } as MenuItem);
+        items.push({ ...doc.data(), id: doc.id } as MenuItem);
       });
 
       // Fetch prices
       const pricesSnapshot = await getDocs(collection(db, 'prices'));
       const prices: PriceDoc[] = [];
       pricesSnapshot.forEach(doc => {
-        prices.push({ id: doc.id, ...doc.data() } as PriceDoc);
+        prices.push({ ...doc.data(), id: doc.id } as PriceDoc);
       });
 
       // If empty, seed
@@ -364,7 +364,7 @@ export const contentService = {
       const snapshot = await getDocs(q);
       const items: GalleryItem[] = [];
       snapshot.forEach(doc => {
-        items.push({ id: doc.id, ...doc.data() } as GalleryItem);
+        items.push({ ...doc.data(), id: doc.id } as GalleryItem);
       });
 
       if (items.length === 0) {
@@ -394,7 +394,7 @@ export const contentService = {
         const updatedSnapshot = await getDocs(q);
         const updatedItems: GalleryItem[] = [];
         updatedSnapshot.forEach(doc => {
-          updatedItems.push({ id: doc.id, ...doc.data() } as GalleryItem);
+          updatedItems.push({ ...doc.data(), id: doc.id } as GalleryItem);
         });
         return updatedItems;
       }
@@ -482,7 +482,7 @@ export const contentService = {
       const snapshot = await getDocs(collection(db, 'offers'));
       const items: OfferItem[] = [];
       snapshot.forEach(doc => {
-        items.push({ id: doc.id, ...doc.data() } as OfferItem);
+        items.push({ ...doc.data(), id: doc.id } as OfferItem);
       });
 
       if (items.length === 0) {

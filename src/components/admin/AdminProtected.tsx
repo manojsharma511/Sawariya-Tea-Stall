@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Loader from '../common/Loader';
 import Logo from '../common/Logo';
@@ -17,6 +17,13 @@ export default function AdminProtected({ children }: AdminProtectedProps) {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [dbError, setDbError] = useState(false);
+
+  useEffect(() => {
+    const handleDbError = () => setDbError(true);
+    window.addEventListener('sawariya_db_permission_error', handleDbError);
+    return () => window.removeEventListener('sawariya_db_permission_error', handleDbError);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,5 +198,15 @@ export default function AdminProtected({ children }: AdminProtectedProps) {
   }
 
   // Authorized and Admin Mode active
-  return <>{children}</>;
+  return (
+    <>
+      {dbError && (
+        <div className="bg-red-500 text-white text-sm font-bold p-3 text-center sticky top-0 z-[100] flex items-center justify-center gap-2 shadow-md">
+          <ShieldAlert size={18} className="shrink-0" />
+          <span>⚠️ DATABASE DISCONNECTED: Firestore Security Rules are blocking access. Please run `npx firebase-tools deploy --only firestore:rules` in your terminal to enable updates.</span>
+        </div>
+      )}
+      {children}
+    </>
+  );
 }

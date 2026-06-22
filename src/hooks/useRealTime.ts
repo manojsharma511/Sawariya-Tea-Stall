@@ -45,10 +45,10 @@ export function sanitizeImagePaths<T>(item: T): T {
       const parts = src.split('/');
       const filenameWithExt = parts[parts.length - 1];
       const filename = filenameWithExt.split('.')[0];
-      
+
       const pngNames = ['336c8044-27f2-4c17-8a76-419fde413547', '44a932a8-1b25-4ab9-954c-37021b103281', '7a08f74a-2f4b-45d3-bd9b-9581045aa7a1', 'a251a44f-d0aa-4c88-894c-b0ccf80c16ad', 'cb5dc902-122f-49a9-a4f6-d03afe90cb10', 'f4aeda41-5550-46e3-8a88-a46e46a6769e'];
       const jpgNames = ['DSC_9368', 'DSC_9369', 'DSC_9370', 'DSC_9373', 'DSC_9374'];
-      
+
       if (pngNames.includes(filename)) {
         return `/sawariya-photos/${filename}.png`;
       } else if (jpgNames.includes(filename)) {
@@ -213,7 +213,7 @@ function getLocalFallbackForDocument(collectionName: string, documentId: string)
  * Falls back to LocalStorage in Mock Mode or static defaults if offline/uninitialized.
  */
 export function useRealTimeCollection<T>(
-  collectionName: string, 
+  collectionName: string,
   orderByField?: string,
   defaultValue: T[] = []
 ) {
@@ -273,12 +273,15 @@ export function useRealTimeCollection<T>(
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const list: any[] = [];
       snapshot.forEach((doc) => {
-        list.push(sanitizeImagePaths({ id: doc.id, ...doc.data() }));
+        list.push(sanitizeImagePaths({ ...doc.data(), id: doc.id }));
       });
       setData(list);
       setLoading(false);
     }, (error) => {
       console.error(`Error in onSnapshot for collection ${collectionName}, loading local fallback:`, error);
+      if (error.code === 'permission-denied') {
+        window.dispatchEvent(new CustomEvent('sawariya_db_permission_error'));
+      }
       const fallback = getLocalFallbackForCollection(collectionName);
       setData(fallback.map(x => sanitizeImagePaths(x)));
       setLoading(false);
@@ -295,8 +298,8 @@ export function useRealTimeCollection<T>(
  * Falls back to LocalStorage or static defaults if offline/uninitialized.
  */
 export function useRealTimeDocument<T>(
-  collectionName: string, 
-  documentId: string, 
+  collectionName: string,
+  documentId: string,
   defaultValue: T
 ) {
   const [data, setData] = useState<T>(defaultValue);
@@ -356,6 +359,9 @@ export function useRealTimeDocument<T>(
       setLoading(false);
     }, (error) => {
       console.error(`Error in onSnapshot for document ${collectionName}/${documentId}, loading local fallback:`, error);
+      if (error.code === 'permission-denied') {
+        window.dispatchEvent(new CustomEvent('sawariya_db_permission_error'));
+      }
       const fallback = getLocalFallbackForDocument(collectionName, documentId) || defaultValue;
       setData(sanitizeImagePaths(fallback));
       setLoading(false);

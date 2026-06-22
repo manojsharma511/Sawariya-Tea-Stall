@@ -205,6 +205,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } finally {
         setLoading(false);
       }
+    } else {
+      setLoading(false);
+      alert('Firebase configuration is missing on the server. Please set VITE_FIREBASE_API_KEY and other Firebase variables in Vercel settings.');
     }
   };
 
@@ -240,6 +243,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Real Firebase Email/Password Authentication for Admin
     try {
+      if (!auth || !db) {
+        throw new Error('Firebase configuration is missing on the server. Please set VITE_FIREBASE_API_KEY and other Firebase variables in Vercel settings.');
+      }
       // 1. Authenticate with Firebase Auth first using email and password
       const result = await signInWithEmailAndPassword(auth, ADMIN_EMAIL, password);
       const firebaseUser = result.user;
@@ -286,6 +292,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
       return true;
     } catch (err: any) {
+      if (err.message && err.message.includes('Firebase configuration is missing')) {
+        setLoading(false);
+        throw err;
+      }
       if (
         (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') &&
         password === 'Sawariya@123' &&
@@ -368,6 +378,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Real Firebase Sign Up for Devotees
     try {
+      if (!auth || !db) {
+        throw new Error('Firebase configuration is missing on the server. Please set VITE_FIREBASE_API_KEY and other Firebase variables in Vercel settings.');
+      }
       const email = targetUser.includes('@') ? targetUser : `${targetUser}@sawariya.com`;
       const result = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(result.user, { displayName: name });
@@ -410,6 +423,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
       allowedAdminUsername = creds.username || 'admin';
     } else {
+      if (!db || !auth) {
+        setLoading(false);
+        throw new Error('Firebase configuration is missing on the server. Please set VITE_FIREBASE_API_KEY and other Firebase variables in Vercel settings.');
+      }
       try {
         const docSnap = await getDoc(doc(db, 'site_content', 'admin_profile'));
         if (docSnap.exists()) {
